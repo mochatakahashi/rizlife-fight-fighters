@@ -1,0 +1,118 @@
+{
+  "id": "rizal",
+  "name": "José Rizal",
+  "short_name": "Rizal",
+  "health": 1000,
+  "walk_speed": 2.0,
+  "back_speed": 1.6,
+  "jump_velocity": 7.6,
+  "jump_speed_x": 2.6,
+  "coat": "#2f3b73",
+  "accent": "#f4b400",
+  "alt_coat": "#3d3d44",
+  "alt_accent": "#2ec4b6",
+  "mustache": true,
+  "style_order": ["writer", "lovers"],
+  "style_switch_frames": 24,
+  "_todo": "Physician style (Scalpel Flurry, Eye Strike, Gamo-gamo) is optional in the proposal. Add it as a third entry in styles and style_order when ready.",
+  "normals": {},
+  "styles": {
+    "writer": {
+      "label": "Writer",
+      "blurb": "Keeps you out with ink and words. Fills the Ink gauge.",
+      "gauge_name": "Ink",
+      "gauge_color": "#2ec4b6",
+      "switch": "cycle",
+      "specials": [
+        {
+          "id": "quill_flick", "name": "Quill Flick", "motion": "qcf", "buttons": ["lp", "hp"],
+          "startup": 11, "active": 1, "recovery": 26, "damage": 70, "hitstun": 18, "blockstun": 14, "push": 3.0,
+          "projectile": {"speed": 3.6, "size": [14, 6], "offset": [26, -52], "color": "#3a6ff7", "life": 150},
+          "heavy": {"projectile": {"speed": 5.0}}
+        },
+        {
+          "id": "noli_me_tangere", "name": "Noli Me Tangere", "motion": "qcb", "buttons": ["lp", "hp"],
+          "startup": 2, "active": 0, "recovery": 30, "counter_window": [2, 20],
+          "counter_hit": {"name": "Noli Me Tangere", "damage": 120, "knockdown": true, "launch": 4.0, "kind": "special"}
+        },
+        {
+          "id": "fili_rush", "name": "Fili Rush", "motion": "qcf", "buttons": ["lk", "hk"],
+          "startup": 8, "active": 8, "recovery": 18, "move_x": 4.0, "damage": 90, "hitstun": 20, "blockstun": 12, "push": 4.0,
+          "hitbox": [6, -50, 30, 30],
+          "heavy": {"move_x": 5.5, "damage": 100}
+        },
+        {
+          "id": "rally", "name": "Rally", "motion": "charge_bf", "buttons": ["lp", "hp"],
+          "startup": 6, "active": 10, "recovery": 18, "move_x": 5.0, "damage": 85, "knockdown": true, "launch": 3.5,
+          "hitbox": [8, -62, 28, 22]
+        },
+        {
+          "id": "century_hence", "name": "Century Hence", "motion": "dd", "buttons": ["lp", "hp"],
+          "startup": 10, "active": 1, "recovery": 20, "damage": 80, "knockdown": true, "launch": 4.0,
+          "projectile": {"speed": 0, "offset": [110, -36], "size": [28, 72], "delay": 40, "life": 10, "color": "#f4b400"},
+          "heavy": {"projectile": {"offset": [170, -36]}}
+        },
+        {
+          "id": "mi_ultimo_adios", "name": "Mi Último Adiós", "kind": "super", "motion": "qcf2", "buttons": ["lp+hp"],
+          "gauge_cost": 100, "startup": 6, "active": 1, "recovery": 40, "invuln": [0, 12],
+          "damage": 300, "hitstun": 30, "knockdown": true, "launch": 6.0, "hitstop": 12,
+          "projectile": {"speed": 6.0, "size": [40, 40], "offset": [30, -40], "color": "#ffffff", "shape": "orb", "life": 120}
+        }
+      ]
+    },
+    "lovers": {
+      "label": "Lovers",
+      "blurb": "His nine loves as assists. Fills the Heart gauge.",
+      "gauge_name": "Heart",
+      "gauge_color": "#f28da0",
+      "switch": "cycle",
+      "specials": [
+        {
+          "id": "segunda", "name": "Segunda", "motion": "qcf", "buttons": ["lp"],
+          "startup": 12, "active": 1, "recovery": 26, "damage": 60, "hitstun": 18, "blockstun": 14,
+          "projectile": {"speed": 3.2, "size": [14, 12], "offset": [26, -50], "color": "#e63946", "shape": "heart", "life": 160}
+        },
+        {
+          "id": "valenzuela", "name": "Valenzuela: Invisible Ink", "motion": "qcf", "buttons": ["hp"],
+          "startup": 12, "active": 1, "recovery": 26, "damage": 55, "hitstun": 16, "blockstun": 12,
+          "projectile": {"speed": 4.2, "size": [14, 8], "offset": [26, -52], "color": "#2ec4b6", "opacity": 0.18, "life": 140}
+        },
+        {
+          "id": "rivera", "name": "Rivera: Letters from Taal", "motion": "qcb", "buttons": ["lp"],
+          "startup": 12, "active": 1, "recovery": 24, "damage": 60, "hitstun": 18, "blockstun": 12, "height": "overhead",
+          "projectile": {"speed": 2.6, "vy": -4.2, "gravity": 0.16, "size": [12, 9], "offset": [20, -60], "color": "#f5f5f7", "life": 200}
+        },
+        {
+          "id": "consuelo", "name": "Consuelo: Verse Strike", "motion": "dp", "buttons": ["lp", "hp"],
+          "startup": 4, "active": 10, "recovery": 28, "invuln": [0, 8], "move_x": 1.2,
+          "damage": 100, "knockdown": true, "launch": 5.5, "hitbox": [2, -96, 30, 70]
+        },
+        {
+          "id": "seiko", "name": "Seiko: Katana Draw", "motion": "qcf", "buttons": ["lk", "hk"],
+          "startup": 9, "active": 4, "recovery": 20, "move_x": 3.2, "damage": 85, "hitstun": 22, "blockstun": 14,
+          "cancel": true, "hitbox": [10, -52, 44, 12]
+        },
+        {
+          "id": "beckett", "name": "Beckett: Ink and Clay", "motion": "qcb", "buttons": ["lk", "hk"],
+          "startup": 14, "active": 6, "recovery": 18, "height": "low", "damage": 80, "knockdown": true, "launch": 3.0,
+          "hitbox": [12, -14, 50, 14]
+        },
+        {
+          "id": "nelly", "name": "Nelly: Fencing Duel", "motion": "charge_bf", "buttons": ["lk", "hk"],
+          "startup": 7, "active": 8, "recovery": 20, "move_x": 6.0, "damage": 90, "hitstun": 20,
+          "hitbox": [8, -54, 52, 6]
+        },
+        {
+          "id": "suzanne", "name": "Suzanne: Farewell Tears", "motion": "charge_du", "buttons": ["lk", "hk"],
+          "startup": 10, "active": 1, "recovery": 24, "damage": 40, "effect": "slow", "effect_frames": 180,
+          "projectile": {"speed": 2.2, "vy": -1.5, "gravity": 0.08, "size": [8, 12], "offset": [24, -64], "color": "#7b8cff", "shape": "orb", "life": 160}
+        },
+        {
+          "id": "josephine", "name": "Josephine: Last Vow", "kind": "super", "motion": "qcf2", "buttons": ["lp+hp"],
+          "gauge_cost": 100, "startup": 5, "active": 12, "recovery": 36, "invuln": [0, 16], "move_x": 4.5,
+          "damage": 290, "knockdown": true, "launch": 6.5, "hitstop": 12, "hitbox": [6, -70, 40, 64]
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,72 @@
+[
+  {
+    "id": "calamba",
+    "name": "Calamba",
+    "topic": "Childhood and family",
+    "skyline": "hills",
+    "sky": ["#3a6ea5", "#f6c28b"],
+    "far": "#4f7a5a",
+    "near": "#2f5440",
+    "ground": "#5a4632",
+    "sun": "#ffe08a"
+  },
+  {
+    "id": "manila",
+    "name": "Manila",
+    "topic": "Schooling at the Ateneo and UST",
+    "skyline": "city",
+    "landmark": "church",
+    "sky": ["#1f2a5a", "#e98a5d"],
+    "far": "#3b3566",
+    "near": "#2a2448",
+    "ground": "#4a4050",
+    "sun": "#ffb35c"
+  },
+  {
+    "id": "madrid",
+    "name": "Madrid",
+    "topic": "Medical studies and the Propaganda Movement",
+    "skyline": "city",
+    "sky": ["#3a2a6b", "#f08a7e"],
+    "far": "#4a3f86",
+    "near": "#2a2350",
+    "ground": "#3d3346",
+    "sun": "#f9d46b"
+  },
+  {
+    "id": "paris",
+    "name": "Paris",
+    "topic": "Eye surgery training and Morga's Sucesos",
+    "skyline": "city",
+    "landmark": "tower",
+    "sky": ["#24305e", "#c98bb9"],
+    "far": "#3e3f73",
+    "near": "#262850",
+    "ground": "#43405a",
+    "sun": "#f4e1a6"
+  },
+  {
+    "id": "berlin",
+    "name": "Berlin",
+    "topic": "Publishing Noli Me Tangere",
+    "skyline": "city",
+    "landmark": "gate",
+    "sky": ["#2b3445", "#8ea3b8"],
+    "far": "#46506a",
+    "near": "#2a3040",
+    "ground": "#3a3d48",
+    "sun": "#dfe6ee"
+  },
+  {
+    "id": "dapitan",
+    "name": "Dapitan",
+    "topic": "Exile: school, clinic and Josephine",
+    "skyline": "coast",
+    "sky": ["#2f86c4", "#f7d38a"],
+    "far": "#3f7d5a",
+    "near": "#2f6a40",
+    "sea": "#2b7a9b",
+    "ground": "#b89a6a",
+    "sun": "#fff0a8"
+  }
+]

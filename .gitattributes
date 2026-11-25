@@ -1,0 +1,14 @@
+# Godot writes LF line endings; keep them the same on every machine.
+* text=auto eol=lf
+
+# Art, audio and fonts are binary.
+*.png binary
+*.jpg binary
+*.webp binary
+*.ogg binary
+*.wav binary
+*.mp3 binary
+*.ttf binary
+*.otf binary
+*.aseprite binary
+*.ase binary

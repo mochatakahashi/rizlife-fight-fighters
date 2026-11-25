@@ -1,0 +1,14 @@
+{
+  "current_term": "AY 2026-2027 1st Semester",
+  "rounds_to_win": 2,
+  "round_seconds": 99,
+  "quiz_seconds": 20,
+  "points": {
+    "win": 1,
+    "quiz_correct": 0
+  },
+  "_notes": [
+    "Change current_term when a new term starts: the leaderboard keeps a separate table per term name.",
+    "points.quiz_correct is 0 until the team decides what a right answer is worth (README, Open decisions)."
+  ]
+}

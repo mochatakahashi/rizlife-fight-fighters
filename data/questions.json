@@ -1,0 +1,103 @@
+{
+  "_about": "Sample questions so the quiz works end to end. Have your instructor check every question, and aim for about 10 per stage. answer is the index of the right choice, counting from 0. stage must match an id in stages.json, or be \"general\".",
+  "questions": [
+    {
+      "id": "calamba-001", "stage": "calamba",
+      "question": "In what year was José Rizal born in Calamba, Laguna?",
+      "choices": ["1859", "1861", "1863", "1872"], "answer": 1,
+      "explain": "Rizal was born on June 19, 1861.",
+      "source": ""
+    },
+    {
+      "id": "calamba-002", "stage": "calamba",
+      "question": "Who was Rizal's mother, and his first teacher?",
+      "choices": ["Teodora Alonso", "Saturnina Rizal", "Leonor Rivera", "Josephine Bracken"], "answer": 0,
+      "explain": "His mother, Teodora Alonso Realonda, taught him to read and pray.",
+      "source": ""
+    },
+    {
+      "id": "manila-001", "stage": "manila",
+      "question": "At which school in Manila did Rizal earn his Bachelor of Arts in 1877?",
+      "choices": ["University of Santo Tomas", "Ateneo Municipal de Manila", "Colegio de San Juan de Letran", "Universidad Central de Madrid"], "answer": 1,
+      "explain": "He graduated from the Ateneo Municipal with highest honors.",
+      "source": ""
+    },
+    {
+      "id": "manila-002", "stage": "manila",
+      "question": "Rizal dedicated El Filibusterismo to which three martyred priests?",
+      "choices": ["Gomburza", "The Katipunan founders", "The Ilustrados", "The Propagandists"], "answer": 0,
+      "explain": "Fathers Gómez, Burgos and Zamora were executed in 1872.",
+      "source": ""
+    },
+    {
+      "id": "madrid-001", "stage": "madrid",
+      "question": "Where in Madrid did Rizal earn his licentiate in medicine?",
+      "choices": ["University of Heidelberg", "University of Paris", "Universidad Central de Madrid", "University of Berlin"], "answer": 2,
+      "explain": "He finished medicine at the Universidad Central de Madrid in 1884.",
+      "source": ""
+    },
+    {
+      "id": "madrid-002", "stage": "madrid",
+      "question": "What was the newspaper of the Propaganda Movement that Rizal wrote for?",
+      "choices": ["La Solidaridad", "Diariong Tagalog", "Kalayaan", "La Liga Filipina"], "answer": 0,
+      "explain": "La Solidaridad was the Propaganda Movement's newspaper in Spain.",
+      "source": ""
+    },
+    {
+      "id": "paris-001", "stage": "paris",
+      "question": "In Paris, Rizal trained under which famous eye doctor?",
+      "choices": ["Otto Becker", "Louis de Wecker", "Rudolf Virchow", "Ferdinand Blumentritt"], "answer": 1,
+      "explain": "He worked at Dr. Louis de Wecker's eye clinic; Otto Becker was in Heidelberg.",
+      "source": ""
+    },
+    {
+      "id": "paris-002", "stage": "paris",
+      "question": "Rizal published an annotated edition of whose 1609 history of the Philippines in Paris in 1890?",
+      "choices": ["Antonio Pigafetta", "Pedro Chirino", "Antonio de Morga", "Miguel López de Legazpi"], "answer": 2,
+      "explain": "He annotated Morga's Sucesos de las Islas Filipinas.",
+      "source": ""
+    },
+    {
+      "id": "berlin-001", "stage": "berlin",
+      "question": "In what city was Noli Me Tangere first printed in 1887?",
+      "choices": ["Madrid", "Paris", "Berlin", "Ghent"], "answer": 2,
+      "explain": "The Noli was printed in Berlin. El Filibusterismo was printed in Ghent.",
+      "source": ""
+    },
+    {
+      "id": "berlin-002", "stage": "berlin",
+      "question": "Which friend lent Rizal the money to print Noli Me Tangere?",
+      "choices": ["Marcelo H. del Pilar", "Graciano López Jaena", "Máximo Viola", "Valentin Ventura"], "answer": 2,
+      "explain": "Dr. Máximo Viola paid for the printing. Valentin Ventura later helped with El Filibusterismo.",
+      "source": ""
+    },
+    {
+      "id": "dapitan-001", "stage": "dapitan",
+      "question": "Rizal's exile in Dapitan began in what year?",
+      "choices": ["1887", "1892", "1896", "1898"], "answer": 1,
+      "explain": "He was exiled to Dapitan in July 1892.",
+      "source": ""
+    },
+    {
+      "id": "dapitan-002", "stage": "dapitan",
+      "question": "Who lived with Rizal during his exile in Dapitan?",
+      "choices": ["Leonor Rivera", "Josephine Bracken", "Nelly Boustead", "Segunda Katigbak"], "answer": 1,
+      "explain": "Josephine Bracken came to Dapitan in 1895.",
+      "source": ""
+    },
+    {
+      "id": "general-001", "stage": "general",
+      "question": "What does \"Noli Me Tangere\" mean?",
+      "choices": ["Touch Me Not", "The Reign of Greed", "My Last Farewell", "To the Filipino Youth"], "answer": 0,
+      "explain": "It is Latin for \"touch me not\".",
+      "source": ""
+    },
+    {
+      "id": "general-002", "stage": "general",
+      "question": "In what year was Rizal executed at Bagumbayan?",
+      "choices": ["1892", "1896", "1898", "1901"], "answer": 1,
+      "explain": "He was executed on December 30, 1896.",
+      "source": ""
+    }
+  ]
+}

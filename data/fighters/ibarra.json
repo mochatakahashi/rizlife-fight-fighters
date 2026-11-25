@@ -1,0 +1,70 @@
+{
+  "id": "ibarra",
+  "name": "Crisóstomo Ibarra",
+  "short_name": "Ibarra",
+  "health": 1000,
+  "walk_speed": 1.9,
+  "back_speed": 1.6,
+  "jump_velocity": 7.4,
+  "jump_speed_x": 2.5,
+  "coat": "#6b2232",
+  "accent": "#e63946",
+  "alt_coat": "#2f4a3a",
+  "alt_accent": "#f4b400",
+  "style_order": ["ibarra"],
+  "normals": {},
+  "styles": {
+    "ibarra": {
+      "label": "Ibarra",
+      "blurb": "Taking hits builds Rage. At full Rage, press LB to become Simoun.",
+      "gauge_name": "Rage",
+      "gauge_color": "#e63946",
+      "gauge_on_damage": 0.14,
+      "switch": "transform",
+      "transform_to": "simoun",
+      "specials": [
+        {
+          "id": "knife_grab", "name": "Knife Grab", "motion": "qcf", "buttons": ["lk", "hk"], "type": "throw",
+          "startup": 5, "active": 3, "recovery": 24, "damage": 120, "knockdown": true, "launch": 3.5,
+          "hitbox": [8, -64, 26, 56]
+        },
+        {
+          "id": "scholars_stance", "name": "Scholar's Stance", "motion": "qcb", "buttons": ["lp", "hp"],
+          "startup": 2, "active": 0, "recovery": 26, "counter_window": [3, 18],
+          "counter_hit": {"name": "Scholar's Stance", "damage": 110, "knockdown": true, "launch": 4.0, "kind": "special"}
+        }
+      ]
+    },
+    "simoun": {
+      "label": "Simoun",
+      "selectable": false,
+      "revert_to": "ibarra",
+      "blurb": "The jeweller's revenge. Hits harder while Rage drains, then turns back into Ibarra.",
+      "gauge_name": "Rage",
+      "gauge_color": "#d4af37",
+      "coat": "#1b1b22",
+      "accent": "#d4af37",
+      "alt_coat": "#24242c",
+      "glasses": true,
+      "damage_mult": 1.15,
+      "drain_per_frame": 0.12,
+      "specials": [
+        {
+          "id": "lamp_bomb", "name": "Lamp Bomb", "motion": "qcf", "buttons": ["lp", "hp"],
+          "startup": 12, "active": 1, "recovery": 26, "damage": 90, "knockdown": true, "launch": 4.0,
+          "projectile": {"speed": 2.8, "vy": -3.6, "gravity": 0.17, "size": [12, 12], "offset": [22, -56], "color": "#f4b400", "shape": "orb", "life": 200}
+        },
+        {
+          "id": "gold_shower", "name": "Gold Shower", "motion": "charge_du", "buttons": ["lp", "hp"],
+          "startup": 5, "active": 10, "recovery": 26, "invuln": [0, 7], "damage": 100, "knockdown": true, "launch": 5.0,
+          "hitbox": [-10, -110, 50, 60]
+        },
+        {
+          "id": "vengeance", "name": "Vengeance", "kind": "super", "motion": "qcf2", "buttons": ["lp+hp"],
+          "gauge_cost": 50, "startup": 6, "active": 14, "recovery": 34, "invuln": [0, 14], "move_x": 5.0,
+          "damage": 280, "knockdown": true, "launch": 6.0, "hitstop": 12, "hitbox": [6, -66, 40, 60]
+        }
+      ]
+    }
+  }
+}
