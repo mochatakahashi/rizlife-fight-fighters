@@ -1,0 +1,159 @@
+{
+  "_about": "Costumes for the drawn characters (scripts/art/character_art.gd). A look can start from another with \"base\". \"alt\" is the second colour set used in mirror matches. top: suit / camisa / baro / habit. bottom: trousers / rolled / skirt / robe. feet: shoes / barefoot / sandals. hair_style: side_part / wavy / short / bun / tonsure / long_white.",
+
+  "rizal": {
+    "skin": "#e0b48a",
+    "hair": "#16121c",
+    "hair_style": "side_part",
+    "facial_hair": "mustache",
+    "top": "suit",
+    "coat": "#1f2233",
+    "shirt": "#f2efe6",
+    "neckwear": "bowtie",
+    "neck_color": "#0b0b10",
+    "bottom": "trousers",
+    "pants": "#1a1c2a",
+    "feet": "shoes",
+    "shoes": "#0b0b10",
+    "alt": {"coat": "#4a3828", "pants": "#3a2c20", "neck_color": "#6b2232"}
+  },
+  "rizal_writer": {"base": "rizal", "accessory": "quill"},
+  "rizal_lovers": {"base": "rizal", "boutonniere": "#e63946"},
+
+  "ibarra": {
+    "skin": "#e8c09a",
+    "hair": "#3a2418",
+    "hair_style": "wavy",
+    "top": "suit",
+    "frock": true,
+    "coat": "#4a1f2a",
+    "vest": "#c9a55a",
+    "shirt": "#f4f1ea",
+    "neckwear": "cravat",
+    "neck_color": "#f4f1ea",
+    "bottom": "trousers",
+    "pants": "#2a2226",
+    "feet": "shoes",
+    "shoes": "#1a1214",
+    "alt": {"coat": "#24443e", "vest": "#9aa3ad", "pants": "#1e2a28"}
+  },
+  "simoun": {
+    "base": "ibarra",
+    "skin": "#c99a6e",
+    "hair": "#ebe9f0",
+    "hair_style": "long_white",
+    "facial_hair": "beard_sparse",
+    "facial_hair_color": "#151217",
+    "eyewear": "blue_glasses",
+    "coat": "#15151c",
+    "vest": "#3a2f12",
+    "neck_color": "#15151c",
+    "watch_chain": "#d4af37",
+    "pants": "#121218",
+    "alt": {"coat": "#2a2440", "vest": "#4a3a18"}
+  },
+
+  "elias": {
+    "skin": "#a8703f",
+    "hair": "#120e0c",
+    "hair_style": "short",
+    "headwear": "salakot",
+    "hat": "#c8a565",
+    "top": "camisa",
+    "shirt": "#ece4cf",
+    "bottom": "rolled",
+    "pants": "#2b3a55",
+    "feet": "barefoot",
+    "accessory": "oar_back",
+    "alt": {"shirt": "#cfd8c4", "pants": "#4a3a2a"}
+  },
+
+  "maria_clara": {
+    "skin": "#f0cfae",
+    "hair": "#1a1010",
+    "hair_style": "bun",
+    "comb": "#d4af37",
+    "top": "baro",
+    "shirt": "#f6f1e7",
+    "panuelo": "#efe3c8",
+    "panuelo_trim": "#d9b45a",
+    "locket": "#d4af37",
+    "bottom": "skirt",
+    "skirt": "#8e2b3e",
+    "skirt_stripe": "#c0485e",
+    "tapis": "#2a1a22",
+    "feet": "shoes",
+    "shoes": "#3a2230",
+    "accessory": "fan",
+    "prop_color": "#e9c46a",
+    "height": 0.95,
+    "width": 0.9,
+    "alt": {"skirt": "#2b4a7e", "skirt_stripe": "#4a72b0"}
+  },
+
+  "padre_damaso": {
+    "skin": "#e2b08a",
+    "hair": "#9a9aa0",
+    "hair_style": "tonsure",
+    "top": "habit",
+    "robe": "#5a3e26",
+    "cord": "#e8e0c8",
+    "bottom": "robe",
+    "feet": "sandals",
+    "width": 1.4,
+    "belly": true,
+    "alt": {"robe": "#3e3a3a"}
+  },
+  "padre_salvi": {
+    "base": "padre_damaso",
+    "skin": "#e6c3a0",
+    "hair": "#3a3030",
+    "robe": "#4e3a28",
+    "width": 0.9,
+    "belly": false
+  },
+
+  "_loves": "Rizal's nine loves, who appear as his assists in Lovers style.",
+  "love_base": {
+    "skin": "#f0cfae", "hair": "#1a1010", "hair_style": "updo", "lips": "#c0485e",
+    "top": "bodice", "bodice": "#3e5a7a", "collar": "#f4f1ea", "brooch": "#d4af37",
+    "bottom": "skirt", "skirt": "#3e5a7a", "legs": "#2a2028",
+    "feet": "shoes", "shoes": "#2a1a1a", "height": 0.93, "width": 0.88
+  },
+  "segunda": {
+    "base": "love_base", "skin": "#d9a77c", "hair_style": "bun", "comb": "#d4af37",
+    "top": "baro", "shirt": "#f8f0f4", "panuelo": "#f7d5e0", "panuelo_trim": "#e07aa0",
+    "skirt": "#c2456e", "skirt_stripe": "#e27a9a", "tapis": "#3a1a2a", "height": 0.9
+  },
+  "valenzuela": {
+    "base": "love_base", "skin": "#dcae84", "hair_style": "bun", "comb": "#c0c6d0",
+    "top": "baro", "shirt": "#f3f7f4", "panuelo": "#e8f3ef", "panuelo_trim": "#4fb3a8",
+    "skirt": "#2a7d75", "skirt_stripe": "#4fb3a8", "tapis": "#16302c"
+  },
+  "rivera": {
+    "base": "love_base", "skin": "#e8c3a0", "hair_style": "bun", "comb": "#d4af37",
+    "top": "baro", "shirt": "#fbf8f1", "panuelo": "#ffffff", "panuelo_trim": "#6f8fd0",
+    "skirt": "#3b5b9a", "skirt_stripe": "#6f8fd0", "tapis": "#1c2440", "height": 0.92
+  },
+  "consuelo": {
+    "base": "love_base", "skin": "#ecc9a8", "hair": "#120c10", "headwear": "mantilla", "mantilla": "#141014",
+    "bodice": "#4a2050", "skirt": "#5b2b5e", "accessory": "fan", "prop_color": "#e63946"
+  },
+  "seiko": {
+    "base": "love_base", "skin": "#f1d4b8", "hair": "#0c0a0c", "hair_style": "japanese", "pin": "#e63946",
+    "top": "kimono", "kimono": "#c94a6a", "kimono_pattern": "#f4c2d0", "collar": "#f4f1ea", "obi": "#f4b400",
+    "bottom": "kimono", "feet": "geta", "shoes": "#8a6a4a"
+  },
+  "beckett": {
+    "base": "love_base", "skin": "#f2d2bc", "hair": "#6b3a20", "bodice": "#3e5a7a", "skirt": "#3e5a7a", "bustle": true
+  },
+  "nelly": {
+    "base": "love_base", "skin": "#ecc8a8", "hair": "#3a2418", "bodice": "#efe8dc", "skirt": "#2a2a3a"
+  },
+  "suzanne": {
+    "base": "love_base", "skin": "#f4dcc8", "hair": "#d8b25a", "bodice": "#7a9a6a", "skirt": "#7a9a6a", "bustle": true
+  },
+  "josephine": {
+    "base": "love_base", "skin": "#f2d6c0", "hair": "#8a4a2a", "bodice": "#f2ede4", "skirt": "#b0b8c4", "brooch": "#e63946"
+  }
+}

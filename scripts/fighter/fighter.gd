@@ -9,8 +9,8 @@ extends Node2D
 ## (Area2D overlaps update one physics frame late, which makes trades and combos inconsistent.)
 ## Press F1 in a match to see them.
 ##
-## Until real sprites exist the fighter draws itself as coloured blocks. Put a SpriteFrames
-## resource at art/fighters/<id>/frames.tres and it is used instead (see art/README.md).
+## The fighter is drawn by CharacterArt in its costume from data/looks.json. Put a SpriteFrames
+## resource at art/fighters/<id>/frames.tres to use hand-drawn sprites instead (see art/README.md).
 
 enum State { IDLE, WALK, CROUCH, PREJUMP, JUMP, ATTACK, HITSTUN, BLOCKSTUN, KNOCKDOWN, GETUP, STYLE_SWITCH, KO, WIN }
 
@@ -18,15 +18,13 @@ const GROUND_Y := 228.0
 const GRAVITY := 0.42
 const GAUGE_MAX := 100.0
 const STAND_BOX := Vector2(24, 70)
-const CROUCH_BOX := Vector2(26, 46)
+const CROUCH_BOX := Vector2(26, 50)
 const AIR_BOX := Vector2(24, 56)
 const PREJUMP_FRAMES := 3
 ## A normal can still turn into a special in its first frames; this makes motions easier on a keyboard.
 const KARA_FRAMES := 3
 const KNOCKDOWN_FRAMES := 36
 const GETUP_FRAMES := 18
-const SKIN := Color("e8b88a")
-const HAIR := Color("1a1420")
 const NEUTRAL_STATES := [State.IDLE, State.WALK, State.CROUCH]
 
 var data: Dictionary = {}
@@ -66,6 +64,8 @@ var round_wins := 0
 var combo_hits := 0
 var slow_frames := 0
 var flash_frames := 0
+## Frames since the fighter was created; drives breathing and walk cycles.
+var anim_t := 0
 
 var sprite: AnimatedSprite2D
 
@@ -120,6 +120,7 @@ func read_input(frozen := false) -> void:
 
 func tick() -> void:
 	read_input()
+	anim_t += 1
 	if flash_frames > 0:
 		flash_frames -= 1
 	if slow_frames > 0:
@@ -248,6 +249,8 @@ func _apply_physics() -> void:
 		position.y = GROUND_Y
 		airborne = false
 		velocity = Vector2.ZERO
+		if fight:
+			fight.spawn_fx("dust", position, state in [State.KNOCKDOWN, State.KO])
 		match state:
 			State.JUMP, State.ATTACK:
 				move = {}
@@ -553,12 +556,13 @@ func set_win() -> void:
 		pending_win = true
 
 
-func color(key: String, fallback := "#888888") -> Color:
-	var st := style_data()
-	var k := key
-	if use_alt_colors and (st.has("alt_" + key) or data.has("alt_" + key)):
-		k = "alt_" + key
-	return Color(str(st.get(k, data.get(k, fallback))))
+func look_id() -> String:
+	return str(style_data().get("look", data.get("look", fighter_id)))
+
+
+## This fighter's costume (data/looks.json). Mirror matches use the "alt" colours for player 2.
+func look() -> Dictionary:
+	return CharacterArt.look(look_id(), use_alt_colors)
 
 
 func _speed_mult() -> float:
@@ -629,6 +633,7 @@ func _load_sprite() -> void:
 	sprite = AnimatedSprite2D.new()
 	sprite.sprite_frames = frames
 	sprite.centered = false
+	sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST  # keeps pixel art sharp
 	var first := "idle" if frames.has_animation("idle") else str(frames.get_animation_names()[0])
 	var tex := frames.get_frame_texture(first, 0)
 	if tex != null:
@@ -650,89 +655,141 @@ func _update_sprite() -> void:
 
 
 func _draw() -> void:
-	# Shadow on the floor, even mid-jump.
-	draw_set_transform(Vector2(0.0, GROUND_Y - position.y), 0.0, Vector2(1.0, 0.28))
-	draw_circle(Vector2.ZERO, 17.0, Color(0, 0, 0, 0.35))
+	# A soft shadow on the floor that shrinks while jumping.
+	var height := clampf((GROUND_Y - position.y) / 80.0, 0.0, 1.0)
+	draw_set_transform(Vector2(0.0, GROUND_Y - position.y), 0.0, Vector2(1.0, 0.26))
+	draw_circle(Vector2.ZERO, 19.0 * (1.0 - height * 0.4), Color(0, 0, 0, 0.38 * (1.0 - height * 0.5)), true, -1.0, true)
 	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 	if sprite == null:
-		_draw_placeholder()
+		_draw_character()
 	if Game.debug_boxes:
 		_draw_debug_boxes()
 
 
-func _mirror(r: Rect2) -> Rect2:
-	if facing > 0:
-		return r
-	return Rect2(-r.position.x - r.size.x, r.position.y, r.size.x, r.size.y)
-
-
-## Coloured blocks standing in for sprites. Enough to read stance, attacks and hits.
-func _draw_placeholder() -> void:
-	var coat := color("coat", "#3b4a8c")
-	var accent := color("accent", "#f4b400")
-	if flash_frames > 0 and flash_frames % 2 == 0:
-		coat = Color.WHITE
-	if state == State.KO or state == State.KNOCKDOWN:
-		draw_rect(_mirror(Rect2(-24, -12, 44, 12)), coat)
-		draw_rect(_mirror(Rect2(-38, -14, 14, 14)), SKIN)
-		draw_rect(_mirror(Rect2(-38, -14, 4, 14)), HAIR)
-		return
-	var r := hurt_rect()
-	r.position -= position
-	var top := r.position.y
-	var h := r.size.y
-	# Body and legs.
-	draw_rect(Rect2(r.position.x, top + 14.0, r.size.x, h - 14.0), coat)
-	if not airborne and state != State.CROUCH:
-		draw_rect(Rect2(-1.0, top + h - 18.0, 2.0, 18.0), coat.darkened(0.45))
-	draw_rect(_mirror(Rect2(2, top + 15.0, 2, minf(16.0, h - 30.0))), accent)
-	# Head.
-	draw_rect(Rect2(-7.0, top, 14.0, 14.0), SKIN)
-	draw_rect(Rect2(-7.0, top, 14.0, 4.0), HAIR)
-	draw_rect(_mirror(Rect2(-7, top, 4, 9)), HAIR)
-	draw_rect(_mirror(Rect2(3, top + 6.0, 2, 2)), Color.BLACK)
-	if bool(data.get("mustache", false)):
-		draw_rect(_mirror(Rect2(1, top + 10.0, 6, 1)), HAIR)
-	if bool(style_data().get("glasses", false)):
-		draw_rect(_mirror(Rect2(0, top + 5.0, 7, 3)), Color(0.1, 0.1, 0.12, 0.9))
-	_draw_arms(top, coat, accent)
+func _draw_character() -> void:
+	var accent := Color(str(style_data().get("gauge_color", "#f4b400")))
 	if state == State.STYLE_SWITCH or _is_countering():
-		var pulse := 0.5 + 0.5 * sin(state_frame * 0.6)
-		draw_arc(Vector2(0, top + h / 2.0), 28.0, 0.0, TAU, 20, Color(accent, 0.4 + 0.4 * pulse), 2.0)
+		var pulse := 0.5 + 0.5 * sin(anim_t * 0.4)
+		Gfx.glow(self, Vector2(0, -36), 46.0, Color(accent, 0.35 + 0.25 * pulse))
+	var assist := state == State.ATTACK and move.has("assist")
+	var behind := assist and _attack_anim() == "cast"
+	if assist and behind:
+		_draw_assist(-18.0)
+	var flash := flash_frames > 0 and flash_frames % 2 == 0
+	var prop := str(move.get("prop", "")) if state == State.ATTACK and not assist else ""
+	CharacterArt.draw(self, look(), _pose(), facing, Vector2.ZERO, {"flash": flash, "prop": prop})
+	if assist and not behind:
+		_draw_assist(14.0)
 
 
-func _draw_arms(top: float, coat: Color, accent: Color) -> void:
-	var arm := coat.lightened(0.15)
-	if state == State.ATTACK and move.has("hitbox"):
-		var s := int(move.get("startup", 5))
-		var a := int(move.get("active", 3))
-		var hb: Array = move["hitbox"]
-		var reach := float(hb[0]) + float(hb[2])
-		var y := float(hb[1]) + float(hb[3]) / 2.0
-		var is_kick := str(move.get("button", move.get("id", ""))).ends_with("k")
-		if move_frame < s:
-			draw_rect(_mirror(Rect2(-6, top + 18.0, 6, 6)), SKIN)  # wind-up
-		elif move_frame < s + a:
-			var limb := Rect2(6, y - 3.0, reach - 6.0, 6)
-			draw_rect(_mirror(limb), coat.darkened(0.2) if is_kick else arm)
-			draw_rect(_mirror(Rect2(reach - 6.0, y - 4.0, 7, 8)), coat.darkened(0.3) if is_kick else SKIN)
-		else:
-			draw_rect(_mirror(Rect2(6, y - 3.0, reach * 0.4, 6)), arm)
-	elif state == State.ATTACK:
-		# Projectiles, counters and the like: arm held forward.
-		draw_rect(_mirror(Rect2(6, top + 20.0, 16, 5)), arm)
-		draw_rect(_mirror(Rect2(20, top + 19.0, 5, 7)), SKIN)
-	elif state == State.BLOCKSTUN or (state == State.WALK and velocity.x * facing < 0.0):
-		draw_rect(_mirror(Rect2(9, top + 14.0, 5, 16)), arm)
-		draw_rect(_mirror(Rect2(9, top + 12.0, 5, 5)), SKIN)
-	elif state == State.WIN:
-		draw_rect(_mirror(Rect2(6, top - 12.0, 5, 26)), arm)
-		draw_rect(_mirror(Rect2(6, top - 16.0, 5, 5)), SKIN)
-	else:
-		draw_rect(_mirror(Rect2(3, top + 17.0, 6, 16)), arm)
-		draw_rect(_mirror(Rect2(3, top + 32.0, 6, 4)), SKIN)
-	if state == State.HITSTUN:
-		draw_rect(_mirror(Rect2(-14, top + 2.0, 4, 4)), accent)
+## Rizal's Lovers specials: the love the move is named after appears beside him and does the attack.
+func _draw_assist(offset: float) -> void:
+	var total := int(move.get("startup", 5)) + int(move.get("active", 3)) + int(move.get("recovery", 10))
+	var fade := clampf(move_frame / 5.0, 0.0, 1.0) * clampf((total - move_frame) / 8.0, 0.0, 1.0)
+	if fade <= 0.0:
+		return
+	var at := Vector2(offset * facing, 0.0)
+	Gfx.glow(self, at + Vector2(0, -34), 34.0, Color(1.0, 0.55, 0.72, 0.35 * fade))
+	var ps := CharacterArt.pose(_attack_anim(), float(anim_t), attack_progress())
+	CharacterArt.draw(self, CharacterArt.look(str(move["assist"])), ps, facing, at, {"alpha": fade, "prop": str(move.get("prop", ""))})
+
+
+func _pose() -> Dictionary:
+	var kind := "idle"
+	var p := 0.0
+	match state:
+		State.WALK:
+			kind = "walk" if velocity.x * facing >= 0.0 else "walk_back"
+		State.CROUCH, State.PREJUMP:
+			kind = "crouch"
+		State.JUMP:
+			kind = "jump"
+			p = clampf(-velocity.y / 7.6, -1.0, 1.0)
+		State.ATTACK:
+			kind = "summon" if move.has("assist") else _attack_anim()
+			p = attack_progress()
+		State.HITSTUN:
+			kind = "hit"
+			p = 1.0 - float(state_frame) / maxf(1.0, stun_frames)
+		State.BLOCKSTUN:
+			kind = "crouch_block" if body_size() == CROUCH_BOX else "block"
+		State.KNOCKDOWN, State.KO:
+			if airborne:
+				kind = "fall"
+				p = minf(1.0, state_frame / 16.0)
+			else:
+				kind = "lying"
+		State.GETUP:
+			kind = "getup"
+			p = float(state_frame) / GETUP_FRAMES
+		State.STYLE_SWITCH:
+			kind = "power"
+			p = float(state_frame) / maxf(1.0, stun_frames)
+		State.WIN:
+			kind = "win"
+	return CharacterArt.pose(kind, float(anim_t), p)
+
+
+## Which body animation a move uses. Set "anim" on a move in the JSON to choose one yourself.
+func _attack_anim() -> String:
+	if move.has("anim"):
+		return str(move["anim"])
+	var id := str(move.get("id", ""))
+	var kick := str(move.get("button", id)).ends_with("k")
+	if str(move.get("kind", "normal")) == "normal":
+		if id.begins_with("j_"):
+			return "air_kick" if kick else "air_punch"
+		match id:
+			"c_hp":
+				return "uppercut"
+			"c_hk":
+				return "sweep"
+			"c_lk":
+				return "low_kick"
+			"c_lp":
+				return "low_punch"
+			"hk":
+				return "kick_high"
+			"lk":
+				return "kick"
+			"hp":
+				return "punch_heavy"
+		return "punch"
+	if airborne:
+		return "air_kick" if kick else "air_punch"
+	if move.has("projectile"):
+		return "cast"
+	if move.has("counter_window"):
+		return "counter"
+	if str(move.get("type", "")) == "throw":
+		return "throw"
+	if str(move.get("height", "")) == "low":
+		return "sweep"
+	var hb: Array = move.get("hitbox", [0, -50, 0, 0])
+	if float(hb[1]) < -80.0:
+		return "uppercut"
+	if float(move.get("move_x", 0.0)) > 0.0:
+		return "lunge_kick" if kick else "lunge"
+	return "kick" if kick else "punch_heavy"
+
+
+## How far into its motion an attack is: winds up, holds while active, eases back.
+func attack_progress() -> float:
+	var s := maxi(1, int(move.get("startup", 5)))
+	var a := int(move.get("active", 3))
+	var r := maxi(1, int(move.get("recovery", 10)))
+	if move.has("counter_window"):
+		var w: Array = move["counter_window"]
+		if move_frame <= int(w[1]):
+			return minf(1.0, float(move_frame) / s)
+		a = int(w[1]) - s
+	if move_frame < s:
+		var k := float(move_frame) / s
+		return 0.65 * k * k
+	if move_frame < s + a:
+		return 1.0
+	var q := clampf(float(move_frame - s - a) / r, 0.0, 1.0)
+	return 1.0 - q * q * (3.0 - 2.0 * q)
 
 
 func _draw_debug_boxes() -> void:

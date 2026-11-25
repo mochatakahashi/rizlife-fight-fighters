@@ -1,25 +1,31 @@
 class_name Hud
 extends Control
-## Health bars, timer, round pips, gauges, combo counter and banners, laid out like the
-## sample UI in the proposal. Everything is drawn in code from the Fight node's state.
+## Health bars, portraits, timer, round wins, gauges, combo counter, move call-outs and banners,
+## all drawn in code from the Fight node's state.
 
 const BAR_W := 176.0
+const SLANT := 6.0
 const MOTION_TEXT := {
 	"qcf": "QCF", "qcb": "QCB", "dp": "DP", "qcf2": "QCF x2", "qcb2": "QCB x2",
 	"dd": "D, D", "ff": "F, F", "charge_bf": "[B] F", "charge_du": "[D] U", "360": "360",
 }
 ## Proposal button names (Xbox layout): X light punch, Y heavy punch, A light kick, B heavy kick.
 const BUTTON_TEXT := {"lp": "X", "hp": "Y", "lk": "A", "hk": "B"}
+## Clickable buttons on the pause screen (the Fight node checks clicks against these).
+const RESUME_RECT := Rect2(150, 226, 84, 18)
+const QUIT_RECT := Rect2(246, 226, 84, 18)
 
 var fight = null
-var font: Font
 var _lag := [1.0, 1.0]
+var _banner := ""
+var _banner_age := 0
+var _event_text := ""
+var _event_age := 0
 
 
 func _ready() -> void:
 	set_anchors_preset(Control.PRESET_FULL_RECT)
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
-	font = ThemeDB.fallback_font
 
 
 ## "QCF + X/Y" style input text for a move.
@@ -41,85 +47,112 @@ func _draw() -> void:
 	if fight == null or fight.fighters.size() < 2:
 		return
 	if fight.super_flash > 0:
-		draw_rect(Rect2(0, 0, 480, 270), Color(0, 0, 0, 0.35))
+		draw_rect(Rect2(0, 0, 480, 270), Color(1, 1, 1, 0.08 * fight.super_flash / 32.0))
+	Gfx.vgradient(self, Rect2(0, 0, 480, 48), Color(0.02, 0.02, 0.06, 0.55), Color(0.02, 0.02, 0.06, 0.0))
+	Gfx.vgradient(self, Rect2(0, 236, 480, 34), Color(0.02, 0.02, 0.06, 0.0), Color(0.02, 0.02, 0.06, 0.55))
 	for i in 2:
 		_draw_player(i)
 	_draw_timer()
+	Gfx.text(self, Vector2(240, 266), str(fight.stage_info.get("name", "")).to_upper(), 7, Color(Palette.TEXT, 0.7), "center", 2)
 	if fight.paused_by >= 0:
 		_draw_pause(fight.paused_by)
 		return
 	_draw_combo()
 	_draw_event()
-	if fight.banner != "":
-		_text_center(240, 130, fight.banner, 28, Palette.GOLD, 4)
-	if fight.sub_banner != "":
-		_text_center(240, 148, fight.sub_banner, 10, Palette.TEXT, 3)
-	_text_center(240, 265, "STAGE: " + str(fight.stage_info.get("name", "")).to_upper(), 8, Palette.TEXT, 2)
+	_draw_banner()
 
+
+# --- Player panels --------------------------------------------------------------------------
 
 func _draw_player(i: int) -> void:
 	var f: Fighter = fight.fighters[i]
 	var left := i == 0
 	var pc: Color = Palette.PLAYER[i]
 	# Portrait.
-	var px := 4.0 if left else 452.0
-	draw_rect(Rect2(px - 1, 3, 26, 26), pc)
-	draw_rect(Rect2(px, 4, 24, 24), Palette.PANEL)
-	draw_rect(Rect2(px + 4, 18, 16, 10), f.color("coat", "#3b4a8c"))
-	draw_rect(Rect2(px + 7, 7, 10, 11), Fighter.SKIN)
-	draw_rect(Rect2(px + 7, 7, 10, 3), Fighter.HAIR)
-	# Health, with a red trail for recent damage.
+	var box := Rect2(4.0 if left else 448.0, 4, 28, 28)
+	Gfx.panel(self, box, Palette.PANEL, pc, 4, 3)
+	CharacterArt.draw_head(self, f.look(), box.get_center() + Vector2(0, 0.5), 1.05, 1 if left else -1,
+		{"flash": f.flash_frames > 0 and f.flash_frames % 2 == 0})
+	# Health, with a red trail showing recent damage.
 	var ratio := clampf(f.health / f.max_health, 0.0, 1.0)
-	_lag[i] = ratio if ratio > _lag[i] else move_toward(_lag[i], ratio, 0.004)
-	var x := 32.0 if left else 480.0 - 32.0 - BAR_W
-	draw_rect(Rect2(x - 1, 7, BAR_W + 2, 11), Palette.TEXT)
-	draw_rect(Rect2(x, 8, BAR_W, 9), Palette.HEALTH_BG)
-	var fill := BAR_W * ratio
-	var lag := BAR_W * float(_lag[i])
+	_lag[i] = ratio if ratio > float(_lag[i]) else move_toward(float(_lag[i]), ratio, 0.006)
+	var x := 36.0 if left else 480.0 - 36.0 - BAR_W
+	var back := _slant(x, 9, BAR_W, 11, left)
+	draw_colored_polygon(back, Color(0.08, 0.03, 0.08, 0.9))
+	_fill(x, 9, BAR_W, 11, float(_lag[i]), left, Color("ff6b6b"), Color("b3202e"))
+	var low := ratio < 0.25 and Engine.get_physics_frames() % 30 < 15
+	_fill(x, 9, BAR_W, 11, ratio, left, Color("ffe066") if not low else Color("ffb3b3"), Color("f08c00") if not low else Color("e63946"))
+	_fill(x, 9, BAR_W, 3.5, ratio, left, Color(1, 1, 1, 0.35), Color(1, 1, 1, 0.08))
+	var closed := back.duplicate()
+	closed.append(back[0])
+	draw_polyline(closed, Color(0.95, 0.95, 1.0, 0.9), 1.0, true)
+	# Name, style and round wins.
+	var nm := f.hud_name().to_upper()
 	if left:
-		draw_rect(Rect2(x, 8, lag, 9), Palette.RED)
-		draw_rect(Rect2(x, 8, fill, 9), Palette.GOLD)
+		Gfx.text(self, Vector2(38, 31), nm, 9, Palette.TEXT, "left", 3)
 	else:
-		draw_rect(Rect2(x + BAR_W - lag, 8, lag, 9), Palette.RED)
-		draw_rect(Rect2(x + BAR_W - fill, 8, fill, 9), Palette.GOLD)
-	# Name and round wins.
-	var label := f.hud_name().to_upper()
-	if left:
-		_text(Vector2(32, 29), label, 9, Palette.TEXT, 2)
-	else:
-		_text_right(448, 29, label, 9, Palette.TEXT, 2)
+		Gfx.text(self, Vector2(442, 31), nm, 9, Palette.TEXT, "right", 3)
 	for k in int(fight.rounds_to_win):
-		var cx: float = 36.0 + k * 10.0 if left else 444.0 - k * 10.0
-		if f.round_wins > k:
-			draw_circle(Vector2(cx, 37), 3.5, Palette.GOLD)
-		else:
-			draw_arc(Vector2(cx, 37), 3.5, 0.0, TAU, 12, Palette.TEXT, 1.0)
-	# Style gauge (Ink, Heart, Rage...).
+		var cx: float = (212.0 - k * 10.0) if left else (268.0 + k * 10.0)
+		var won := f.round_wins > k
+		if won:
+			Gfx.glow(self, Vector2(cx, 27), 7.0, Color(Palette.GOLD, 0.7))
+		draw_circle(Vector2(cx, 27), 3.2, Palette.GOLD if won else Color(0.1, 0.1, 0.2, 0.9), true, -1.0, true)
+		draw_circle(Vector2(cx, 27), 3.2, Color(1, 1, 1, 0.8), false, 1.0, true)
+	# Style gauge (Ink, Heart, Rage).
 	var st := f.style_data()
-	var gauge_color := Color(str(st.get("gauge_color", "#2ec4b6")))
-	var gname := str(st.get("gauge_name", "Gauge")).to_upper()
-	var gx := 34.0 if left else 346.0
-	draw_rect(Rect2(gx - 1, 253, 102, 8), Palette.TEXT)
-	draw_rect(Rect2(gx, 254, 100, 6), Palette.HEALTH_BG)
-	var g := f.gauge / Fighter.GAUGE_MAX
+	var gc := Color(str(st.get("gauge_color", "#2ec4b6")))
+	var gx := 40.0 if left else 330.0
+	var gw := 110.0
+	var g := clampf(f.gauge / Fighter.GAUGE_MAX, 0.0, 1.0)
+	var full := g >= 1.0
+	var gback := _slant(gx, 254, gw, 7, left)
+	draw_colored_polygon(gback, Color(0.06, 0.04, 0.1, 0.9))
+	if full:
+		Gfx.glow(self, Vector2(gx + gw / 2.0, 257), 60.0, Color(gc, 0.25 + 0.2 * sin(Engine.get_physics_frames() * 0.2)))
+	_fill(gx, 254, gw, 7, g, left, gc.lightened(0.3), gc.darkened(0.2))
+	for s in range(1, 4):
+		var tx := gx + gw * s / 4.0
+		draw_line(Vector2(tx, 254), Vector2(tx - 3.0 if left else tx + 3.0, 261), Color(0, 0, 0, 0.5), 1.0, true)
+	var gclosed := gback.duplicate()
+	gclosed.append(gback[0])
+	draw_polyline(gclosed, Color(1, 1, 1, 0.7), 0.8, true)
+	var tag := str(st.get("gauge_name", "Gauge")).to_upper() + ("  MAX" if full else "")
 	if left:
-		draw_rect(Rect2(gx, 254, 100.0 * g, 6), gauge_color)
+		Gfx.text(self, Vector2(4, 261), "P1", 8, pc, "left", 2)
+		Gfx.text(self, Vector2(gx + 2, 251), tag, 7, gc.lightened(0.3), "left", 2)
 	else:
-		draw_rect(Rect2(gx + 100.0 * (1.0 - g), 254, 100.0 * g, 6), gauge_color)
-	var full := f.gauge >= Fighter.GAUGE_MAX and Engine.get_physics_frames() % 20 < 10
-	var tag := ("P%d " % (i + 1)) + (gname + " MAX" if full else gname)
+		Gfx.text(self, Vector2(476, 261), "P2", 8, pc, "right", 2)
+		Gfx.text(self, Vector2(gx + gw - 2, 251), tag, 7, gc.lightened(0.3), "right", 2)
+
+
+## A bar leaning toward the middle of the screen.
+func _slant(x: float, y: float, w: float, h: float, left: bool) -> PackedVector2Array:
 	if left:
-		_text(Vector2(4, 250), tag, 8, pc, 2)
-	else:
-		_text_right(476, 250, tag, 8, pc, 2)
+		return PackedVector2Array([Vector2(x + SLANT, y), Vector2(x + w, y), Vector2(x + w - SLANT, y + h), Vector2(x, y + h)])
+	return PackedVector2Array([Vector2(x, y), Vector2(x + w - SLANT, y), Vector2(x + w, y + h), Vector2(x + SLANT, y + h)])
+
+
+## Fills `ratio` of a slanted bar from its outer end, with a top-to-bottom gradient.
+func _fill(x: float, y: float, w: float, h: float, ratio: float, left: bool, top: Color, bottom: Color) -> void:
+	var fw := w * ratio
+	if fw < SLANT + 0.5:
+		return
+	var pts := _slant(x if left else x + w - fw, y, fw, h, left)
+	draw_polygon(pts, PackedColorArray([top, top, bottom, bottom]))
 
 
 func _draw_timer() -> void:
-	draw_rect(Rect2(221, 2, 38, 26), Palette.TEXT)
-	draw_rect(Rect2(222, 3, 36, 24), Palette.BG)
 	var seconds := ceili(fight.timer_frames / 60.0)
-	_text_center(240, 22, "%d" % seconds, 16, Palette.TEXT)
-	_text_center(240, 38, "ROUND %d" % fight.round_number, 8, Palette.TEXT, 2)
+	var urgent: bool = seconds <= 10 and fight.phase == Fight.Phase.FIGHT
+	var col := Palette.RED if urgent else Palette.GOLD
+	Gfx.glow(self, Vector2(240, 17), 30.0, Color(col, 0.25))
+	Gfx.panel(self, Rect2(220, 2, 40, 30), Color(0.05, 0.05, 0.12, 0.95), col, 6, 4)
+	var pulse := 1.0 + (0.08 * sin(Engine.get_physics_frames() * 0.3) if urgent else 0.0)
+	draw_set_transform(Vector2(240, 23), 0.0, Vector2(pulse, pulse))
+	Gfx.text(self, Vector2.ZERO, "%d" % seconds, 18, Palette.TEXT, "center", 3)
+	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+	Gfx.text(self, Vector2(240, 41), "ROUND %d" % fight.round_number, 7, Color(Palette.TEXT, 0.85), "center", 2)
 
 
 func _draw_combo() -> void:
@@ -127,54 +160,71 @@ func _draw_combo() -> void:
 		var shown: Dictionary = fight.combo_display[i]
 		if shown.is_empty():
 			continue
-		var hits := "%d HIT" % int(shown["hits"])
-		if i == 0:
-			_text(Vector2(8, 66), hits, 18, Palette.GOLD, 3)
-			_text(Vector2(8, 77), "COMBO", 9, Palette.TEXT, 2)
-		else:
-			_text_right(472, 66, hits, 18, Palette.GOLD, 3)
-			_text_right(472, 77, "COMBO", 9, Palette.TEXT, 2)
+		var age := 70 - int(shown["frames"])
+		var slide := (1.0 - Gfx.ease_out(age / 8.0)) * 30.0
+		var x := 8.0 - slide if i == 0 else 472.0 + slide
+		var align := "left" if i == 0 else "right"
+		Gfx.text(self, Vector2(x, 70), "%d HITS" % int(shown["hits"]), 20, Palette.GOLD, align, 4)
+		Gfx.text(self, Vector2(x, 81), "COMBO", 9, Palette.TEXT, align, 3)
 
 
 func _draw_event() -> void:
 	var e: Dictionary = fight.last_event
 	if e.is_empty():
+		_event_text = ""
 		return
+	var text := str(e.get("text", ""))
+	if text != _event_text:
+		_event_text = text
+		_event_age = 0
+	_event_age += 1
+	var k := Gfx.ease_out(_event_age / 10.0)
+	var fade := clampf(float(e.get("frames", 0)) / 12.0, 0.0, 1.0)
 	var c := Palette.PINK if bool(e.get("super", false)) else Palette.GOLD
-	_text_center(240, 64, str(e.get("text", "")), 14, c, 3)
+	var ribbon := Rect2(240 - 130 * k, 56, 260 * k, 26)
+	Gfx.hgradient(self, Rect2(ribbon.position, Vector2(ribbon.size.x / 2.0, ribbon.size.y)), Color(0, 0, 0, 0), Color(0.03, 0.02, 0.08, 0.7 * fade))
+	Gfx.hgradient(self, Rect2(ribbon.position + Vector2(ribbon.size.x / 2.0, 0), Vector2(ribbon.size.x / 2.0, ribbon.size.y)), Color(0.03, 0.02, 0.08, 0.7 * fade), Color(0, 0, 0, 0))
+	Gfx.text(self, Vector2(240, 70), text, 13, Color(c, fade), "center", 3)
 	if str(e.get("sub", "")) != "":
-		_text_center(240, 76, str(e.get("sub", "")), 8, Palette.TEXT, 2)
+		Gfx.text(self, Vector2(240, 79), str(e.get("sub", "")), 7, Color(Palette.TEXT, fade), "center", 2)
+
+
+func _draw_banner() -> void:
+	if fight.banner != _banner:
+		_banner = fight.banner
+		_banner_age = 0
+	_banner_age += 1
+	if _banner == "":
+		return
+	var k := Gfx.ease_out(_banner_age / 10.0)
+	var s := lerpf(1.8, 1.0, k)
+	var a := clampf(_banner_age / 6.0, 0.0, 1.0)
+	Gfx.glow(self, Vector2(240, 122), 140.0 * k, Color(Palette.GOLD, 0.22 * a))
+	Gfx.hgradient(self, Rect2(40, 106, 200, 34), Color(0, 0, 0, 0), Color(0.03, 0.02, 0.08, 0.6 * a))
+	Gfx.hgradient(self, Rect2(240, 106, 200, 34), Color(0.03, 0.02, 0.08, 0.6 * a), Color(0, 0, 0, 0))
+	draw_set_transform(Vector2(240, 133), 0.0, Vector2(s, s))
+	Gfx.text(self, Vector2.ZERO, _banner, 30, Color(Palette.GOLD.lightened(0.1), a), "center", 6)
+	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+	if fight.sub_banner != "":
+		Gfx.text(self, Vector2(240, 152), fight.sub_banner, 10, Color(Palette.TEXT, a), "center", 3)
 
 
 func _draw_pause(i: int) -> void:
 	var f: Fighter = fight.fighters[i]
-	draw_rect(Rect2(0, 0, 480, 270), Color(0.03, 0.03, 0.08, 0.82))
-	_text_center(240, 30, "PAUSED (P%d)" % (i + 1), 16, Palette.GOLD, 2)
-	_text_center(240, 44, "%s  -  %s style" % [f.short_name, str(f.style_data().get("label", ""))], 9, Palette.TEXT)
-	var y := 64.0
+	draw_rect(Rect2(0, 0, 480, 270), Color(0.02, 0.02, 0.06, 0.72))
+	var panel := Rect2(60, 20, 360, 232)
+	Gfx.panel(self, panel, Color(Palette.PANEL, 0.97), Palette.GOLD, 8, 10)
+	Gfx.text(self, Vector2(240, 42), "PAUSED  ·  P%d" % (i + 1), 16, Palette.GOLD, "center", 3)
+	Gfx.text(self, Vector2(240, 55), "%s  ·  %s style" % [f.short_name, str(f.style_data().get("label", ""))], 9, Palette.MUTED, "center", 0, ThemeDB.fallback_font)
+	var y := 74.0
 	for m in f.style_data().get("specials", []):
-		_text(Vector2(80, y), str(m.get("name", "")), 9, Palette.TEXT)
-		_text_right(400, y, notation(m), 9, Palette.TEAL)
+		Gfx.text(self, Vector2(84, y), str(m.get("name", "")), 9, Palette.TEXT, "left", 0, ThemeDB.fallback_font)
+		Gfx.text(self, Vector2(396, y), notation(m), 9, Palette.TEAL, "right")
 		y += 13.0
-	_text_center(240, 232, "X = light punch   Y = heavy punch   A = light kick   B = heavy kick   LB = style", 8, Palette.MUTED)
-	_text_center(240, 250, "START: resume      B (heavy kick): quit to menu", 9, Palette.TEXT)
-
-
-func _text(pos: Vector2, text: String, size: int, c: Color, outline := 0) -> void:
-	if outline > 0:
-		draw_string_outline(font, pos, text, HORIZONTAL_ALIGNMENT_LEFT, -1, size, outline, Palette.OUTLINE)
-	draw_string(font, pos, text, HORIZONTAL_ALIGNMENT_LEFT, -1, size, c)
-
-
-func _text_center(cx: float, y: float, text: String, size: int, c: Color, outline := 0) -> void:
-	var pos := Vector2(cx - 240.0, y)
-	if outline > 0:
-		draw_string_outline(font, pos, text, HORIZONTAL_ALIGNMENT_CENTER, 480, size, outline, Palette.OUTLINE)
-	draw_string(font, pos, text, HORIZONTAL_ALIGNMENT_CENTER, 480, size, c)
-
-
-func _text_right(rx: float, y: float, text: String, size: int, c: Color, outline := 0) -> void:
-	var pos := Vector2(rx - 300.0, y)
-	if outline > 0:
-		draw_string_outline(font, pos, text, HORIZONTAL_ALIGNMENT_RIGHT, 300, size, outline, Palette.OUTLINE)
-	draw_string(font, pos, text, HORIZONTAL_ALIGNMENT_RIGHT, 300, size, c)
+	Gfx.text(self, Vector2(240, 214), "X = light punch   Y = heavy punch   A = light kick   B = heavy kick   LB = style", 7, Palette.MUTED, "center", 0, ThemeDB.fallback_font)
+	var mouse := get_local_mouse_position()
+	for b in [[RESUME_RECT, "RESUME  (Start)"], [QUIT_RECT, "QUIT  (B)"]]:
+		var r: Rect2 = b[0]
+		var hot := r.has_point(mouse)
+		Gfx.panel(self, r, Palette.PANEL_LIGHT if hot else Palette.BG, Palette.GOLD if hot else Palette.PANEL_LIGHT, 4, 2)
+		Gfx.text(self, Vector2(r.get_center().x, r.position.y + 12.5), str(b[1]), 8, Palette.GOLD if hot else Palette.TEXT, "center")

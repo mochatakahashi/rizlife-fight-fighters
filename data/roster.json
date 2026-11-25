@@ -1,42 +1,37 @@
 [
   {
     "id": "rizal",
+    "look": "rizal_writer",
     "name": "José Rizal",
     "role": "Switches between the Writer and Lovers styles (Physician later).",
-    "coat": "#2f3b73",
-    "accent": "#f4b400",
     "playable": true
   },
   {
     "id": "ibarra",
+    "look": "ibarra",
     "name": "Ibarra / Simoun",
     "role": "Counter fighter. Full Rage turns him into Simoun.",
-    "coat": "#6b2232",
-    "accent": "#e63946",
     "playable": true
   },
   {
     "id": "elias",
+    "look": "elias",
     "name": "Elias",
     "role": "Mobile boatman with a self-sacrifice super.",
-    "coat": "#1f5f5b",
-    "accent": "#2ec4b6",
     "playable": false
   },
   {
     "id": "maria_clara",
+    "look": "maria_clara",
     "name": "María Clara",
     "role": "Defensive counter-puncher with a bell shockwave.",
-    "coat": "#5b3a8c",
-    "accent": "#9b5de5",
     "playable": false
   },
   {
     "id": "padre_damaso",
+    "look": "padre_damaso",
     "name": "Padre Dámaso",
     "role": "Slow, heavy grappler with huge damage.",
-    "coat": "#4a3a2a",
-    "accent": "#f28da0",
     "playable": false
   }
 ]

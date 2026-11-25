@@ -21,6 +21,7 @@ config/icon="res://icon.svg"
 Game="*res://scripts/autoload/game.gd"
 Leaderboard="*res://scripts/autoload/leaderboard.gd"
 QuestionBank="*res://scripts/autoload/question_bank.gd"
+Transition="*res://scripts/autoload/transition.gd"
 
 [display]
 
@@ -28,8 +29,8 @@ window/size/viewport_width=480
 window/size/viewport_height=270
 window/size/window_width_override=1440
 window/size/window_height_override=810
-window/stretch/mode="viewport"
-window/stretch/scale_mode="integer"
+window/stretch/mode="canvas_items"
+window/stretch/aspect="keep"
 
 [input]
 
@@ -170,6 +171,6 @@ p2_start={
 
 [rendering]
 
-textures/canvas_textures/default_texture_filter=0
+anti_aliasing/quality/msaa_2d=2
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"

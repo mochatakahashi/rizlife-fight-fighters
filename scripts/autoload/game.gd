@@ -43,8 +43,9 @@ func _unhandled_input(event: InputEvent) -> void:
 			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED if full else DisplayServer.WINDOW_MODE_FULLSCREEN)
 
 
+## Changes screen with a short fade.
 func goto(scene: String) -> void:
-	get_tree().change_scene_to_file(SCENES + scene + ".tscn")
+	Transition.change_to(SCENES + scene + ".tscn")
 
 
 static func load_json(path: String, fallback: Variant) -> Variant:

@@ -1,7 +1,10 @@
 class_name Projectile
 extends Node2D
-## A thrown or summoned attack: hearts, quills, lamp bombs, delayed hits.
+## A thrown or summoned attack: quills, hearts, letters, lamp bombs, delayed hits.
 ## Its look and path come from the move's "projectile" block in the fighter's JSON.
+## shape: rect, orb, heart, quill, letter, ink, tear, lamp, pillar.
+
+const TRAIL := 7
 
 var owner_fighter: Fighter
 var move: Dictionary = {}
@@ -9,13 +12,14 @@ var velocity := Vector2.ZERO
 var gravity := 0.0
 var size := Vector2(12, 8)
 var life := 120
-## Frames before it becomes dangerous (Century Hence shows a warning outline first).
+## Frames before it becomes dangerous (Century Hence shows a warning first).
 var delay := 0
 var tint := Color.WHITE
 var opacity := 1.0
 var shape := "rect"
 var spent := false
 var age := 0
+var _trail: Array[Vector2] = []
 
 
 func setup(fighter: Fighter, m: Dictionary) -> void:
@@ -40,6 +44,9 @@ func tick() -> void:
 	if delay > 0:
 		delay -= 1
 	else:
+		_trail.push_front(position)
+		if _trail.size() > TRAIL:
+			_trail.pop_back()
 		position += velocity
 		velocity.y += gravity
 		life -= 1
@@ -58,22 +65,68 @@ func rect() -> Rect2:
 
 func _draw() -> void:
 	var c := Color(tint, opacity)
-	var box := Rect2(-size / 2.0, size)
+	var r := maxf(size.x, size.y) / 2.0
 	if delay > 0:
-		var blink := 0.6 if age % 10 < 5 else 0.25
-		draw_rect(box, Color(tint, blink), false, 1.0)
+		_draw_warning(c)
 		return
+	# Trail and glow.
+	var dir := velocity.normalized() if velocity.length() > 0.01 else Vector2(1, 0)
+	for i in _trail.size():
+		var k := 1.0 - float(i) / TRAIL
+		Gfx.glow(self, _trail[i] - position, r * (0.6 + k * 0.8), Color(tint, 0.18 * k * opacity))
+	Gfx.glow(self, Vector2.ZERO, r * 2.8, Color(tint, 0.45 * opacity))
+	var ink := Color(0.04, 0.03, 0.07, opacity)
 	match shape:
 		"heart":
-			var r := size.x / 4.0
-			draw_circle(Vector2(-r, -r * 0.5), r, c)
-			draw_circle(Vector2(r, -r * 0.5), r, c)
-			draw_colored_polygon(PackedVector2Array([
-				Vector2(-r * 2.0, -r * 0.3), Vector2(r * 2.0, -r * 0.3), Vector2(0, r * 2.0)]), c)
-		"orb":
-			draw_circle(Vector2.ZERO, size.x / 2.0, c)
-			draw_circle(Vector2.ZERO, size.x / 4.0, Color(1, 1, 1, opacity * 0.8))
-		_:
+			var h := size.x / 4.0
+			var pts := PackedVector2Array([Vector2(-h * 2.0, -h * 0.3), Vector2(h * 2.0, -h * 0.3), Vector2(0, h * 2.0)])
+			draw_circle(Vector2(-h, -h * 0.5), h + 0.8, ink, true, -1.0, true)
+			draw_circle(Vector2(h, -h * 0.5), h + 0.8, ink, true, -1.0, true)
+			draw_circle(Vector2(-h, -h * 0.5), h, c, true, -1.0, true)
+			draw_circle(Vector2(h, -h * 0.5), h, c, true, -1.0, true)
+			draw_colored_polygon(pts, c)
+			draw_circle(Vector2(-h * 1.2, -h * 0.8), h * 0.35, Color(1, 1, 1, 0.6 * opacity), true, -1.0, true)
+		"orb", "lamp", "tear":
+			draw_circle(Vector2.ZERO, r + 0.8, ink, true, -1.0, true)
+			draw_circle(Vector2.ZERO, r, c, true, -1.0, true)
+			draw_circle(Vector2(-r * 0.3, -r * 0.3), r * 0.45, Color(1, 1, 1, 0.7 * opacity), true, -1.0, true)
+			if shape == "lamp":
+				draw_line(Vector2(0, -r), Vector2(0, -r - 3.0), ink, 1.2, true)
+				Gfx.glow(self, Vector2(0, -r - 3.0), 4.0, Color(1.0, 0.6, 0.2, opacity))
+			if shape == "tear":
+				draw_colored_polygon(PackedVector2Array([Vector2(-r * 0.8, -r * 0.4), Vector2(r * 0.8, -r * 0.4), Vector2(0, -r * 2.0)]), c)
+		"quill":
+			var tail := -dir * size.x * 0.6
+			var tip := dir * size.x * 0.5
+			draw_line(tail, tip, ink, 3.4, true)
+			draw_line(tail, tip, Color(0.96, 0.97, 1.0, opacity), 2.0, true)
+			var n := Vector2(-dir.y, dir.x)
+			draw_colored_polygon(PackedVector2Array([tail, tail.lerp(tip, 0.6) + n * 2.6, tip * 0.2, tail.lerp(tip, 0.6) - n * 1.0]), Color(0.9, 0.94, 1.0, opacity))
+			draw_circle(tip, 1.2, c, true, -1.0, true)
+		"letter":
+			var box := Rect2(-size / 2.0, size)
+			draw_rect(box.grow(0.8), ink)
 			draw_rect(box, c)
+			draw_line(box.position, box.get_center() + Vector2(0, 1), c.darkened(0.3), 0.8, true)
+			draw_line(Vector2(box.end.x, box.position.y), box.get_center() + Vector2(0, 1), c.darkened(0.3), 0.8, true)
+			draw_circle(box.get_center() + Vector2(0, 1.5), 1.2, Color(0.9, 0.2, 0.25, opacity), true, -1.0, true)
+		"ink":
+			for k in 3:
+				draw_circle(Vector2(-k * 4.0 * signf(dir.x), sin(age * 0.3 + k) * 1.5), r * (1.0 - k * 0.25), c, true, -1.0, true)
+		"pillar":
+			Gfx.glow(self, Vector2.ZERO, size.y * 0.7, Color(tint, 0.5))
+			Gfx.vgradient(self, Rect2(-size.x / 2.0, -size.y / 2.0, size.x, size.y), Color(tint, 0.0), Color(tint, 0.85))
+			for k in 4:
+				var y := -size.y / 2.0 + fmod(age * 3.0 + k * 18.0, size.y)
+				draw_line(Vector2(-size.x * 0.35, y), Vector2(size.x * 0.35, y), Color(1, 1, 1, 0.7), 1.0, true)
+		_:
+			draw_rect(Rect2(-size / 2.0, size).grow(0.8), ink)
+			draw_rect(Rect2(-size / 2.0, size), c)
 	if Game.debug_boxes:
-		draw_rect(box, Color(1.0, 0.2, 0.2, 0.7), false, 1.0)
+		draw_rect(Rect2(-size / 2.0, size), Color(1.0, 0.2, 0.2, 0.7), false, 1.0)
+
+
+func _draw_warning(c: Color) -> void:
+	var blink := 0.6 if age % 10 < 5 else 0.3
+	Gfx.glow(self, Vector2(0, size.y / 2.0), size.x * 1.4, Color(c, 0.25 * blink))
+	draw_rect(Rect2(-size / 2.0, size), Color(c, blink), false, 1.0)

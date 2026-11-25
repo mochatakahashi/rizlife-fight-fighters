@@ -49,6 +49,9 @@ var last_event: Dictionary = {}
 var combo_display: Array = [{}, {}]
 
 var _projectile_layer: Node2D
+var fx: FightFx
+## Screen shake strength (visual only, never touches the match).
+var shake := 0.0
 
 
 func _ready() -> void:
@@ -65,11 +68,24 @@ func _physics_process(_delta: float) -> void:
 		step()
 
 
+func _process(delta: float) -> void:
+	if shake > 0.05:
+		position = Vector2(randf_range(-1.0, 1.0), randf_range(-1.0, 1.0)) * shake
+		shake = move_toward(shake, 0.0, delta * 18.0)
+	elif position != Vector2.ZERO:
+		position = Vector2.ZERO
+
+
 func step() -> void:
 	_check_pause()
 	if paused_by >= 0:
 		hud.queue_redraw()
 		return
+	fx.tick()
+	var dim := clampf(super_flash / 10.0, 0.0, 1.0) * 0.55
+	if not is_equal_approx(dim, stage.dim):
+		stage.dim = dim
+		stage.queue_redraw()
 	phase_frame += 1
 	match phase:
 		Phase.INTRO:
@@ -128,6 +144,8 @@ func _build() -> void:
 			sources[i].bind(fighters[i], fighters[i].opponent)
 	_projectile_layer = Node2D.new()
 	add_child(_projectile_layer)
+	fx = FightFx.new()
+	add_child(fx)
 	var layer := CanvasLayer.new()
 	hud = Hud.new()
 	hud.fight = self
@@ -145,6 +163,7 @@ func _start_round() -> void:
 	timer_frames = int(Game.rules.get("round_seconds", 99)) * 60
 	hitstop = 0
 	super_flash = 0
+	fx.clear()
 	combo_display = [{}, {}]
 	last_event = {}
 	round_winner = -1
@@ -193,9 +212,11 @@ func _step_fight() -> void:
 
 
 func _step_round_over() -> void:
-	for f in fighters:
-		f.tick()
-	_resolve_pushboxes()
+	# The first moments after a K.O. play in slow motion.
+	if phase_frame > 48 or phase_frame % 2 == 0:
+		for f in fighters:
+			f.tick()
+		_resolve_pushboxes()
 	if phase_frame == 70 and round_winner >= 0:
 		banner = "%s WINS" % fighters[round_winner].short_name.to_upper()
 		sub_banner = ""
@@ -253,6 +274,10 @@ func _end_round(winner: int, reason: String) -> void:
 	sub_banner = "DRAW" if winner < 0 else ""
 	if winner >= 0:
 		fighters[winner].round_wins += 1
+		if reason != "TIME":
+			var loser := fighters[1 - winner]
+			fx.spawn("ko", loser.position + Vector2(0, -36))
+			shake = 6.0
 	for f in fighters:
 		f.input_enabled = false
 	for p in projectiles:
@@ -369,13 +394,21 @@ func has_projectile(f: Fighter) -> bool:
 	return false
 
 
+func spawn_fx(kind: String, pos: Vector2, big := false) -> void:
+	if fx != null:
+		fx.spawn(kind, pos, Color(1.0, 0.85, 0.3), big)
+
+
 func on_move_started(f: Fighter, m: Dictionary) -> void:
 	var is_super := str(m.get("kind", "special")) == "super"
 	last_event = {"text": str(m.get("name", "")).to_upper() + "!", "sub": Hud.notation(m),
 		"player": f.player_index, "frames": 60, "super": is_super}
+	if m.has("assist"):
+		fx.spawn("summon", f.position + Vector2(14.0 * f.facing, -40.0), Color(1.0, 0.55, 0.72))
 	if is_super:
 		hitstop = 32
 		super_flash = 32
+		shake = maxf(shake, 3.0)
 
 
 func on_style_changed(f: Fighter) -> void:
@@ -385,21 +418,51 @@ func on_style_changed(f: Fighter) -> void:
 		"sub": "", "player": f.player_index, "frames": 50, "super": false}
 
 
-func report_hit(attacker: Fighter, _defender: Fighter, m: Dictionary, result: String, combo: int) -> void:
+func report_hit(attacker: Fighter, defender: Fighter, m: Dictionary, result: String, combo: int) -> void:
+	var at := _contact_point(attacker, defender)
+	var heavy := float(m.get("damage", 50)) >= 70.0
 	match result:
 		"hit":
 			hitstop = maxi(hitstop, int(m.get("hitstop", 7)))
+			fx.spawn("hit", at, Color(1.0, 0.8, 0.25), heavy)
+			shake = maxf(shake, 3.0 if heavy else 1.2)
 			if combo >= 2:
 				combo_display[attacker.player_index] = {"hits": combo, "frames": 70}
 		"block":
 			hitstop = maxi(hitstop, 5)
+			fx.spawn("block", at)
 		"counter":
 			hitstop = maxi(hitstop, 14)
+			fx.spawn("counter", at, Color(0.4, 0.9, 1.0), true)
+			shake = maxf(shake, 3.0)
 			last_event = {"text": str(m.get("name", "Counter")).to_upper() + "!", "sub": "COUNTER",
 				"player": attacker.player_index, "frames": 60, "super": false}
 
 
+## Where the spark goes: the overlap of the attack and the body it hit.
+func _contact_point(attacker: Fighter, defender: Fighter) -> Vector2:
+	var hurt := defender.hurt_rect()
+	if attacker.state == Fighter.State.ATTACK and attacker.move.has("hitbox"):
+		var overlap := attacker.hit_rect().intersection(hurt)
+		if overlap.has_area():
+			return overlap.get_center()
+	var side := hurt.position.x if attacker.position.x < defender.position.x else hurt.end.x
+	return Vector2(side, hurt.position.y + hurt.size.y * 0.35)
+
+
 # --- Pause ------------------------------------------------------------------------------------
+
+## Mouse clicks on the pause screen's buttons.
+func _unhandled_input(event: InputEvent) -> void:
+	if paused_by < 0 or not (event is InputEventMouseButton) or not event.pressed or event.button_index != MOUSE_BUTTON_LEFT:
+		return
+	var at := get_global_mouse_position()
+	if Hud.RESUME_RECT.has_point(at):
+		paused_by = -1
+	elif Hud.QUIT_RECT.has_point(at):
+		paused_by = -1
+		Game.goto("main_menu")
+
 
 func _check_pause() -> void:
 	if not auto_run or phase == Phase.MATCH_OVER:
