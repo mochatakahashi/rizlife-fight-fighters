@@ -1,0 +1,46 @@
+{
+  "id": "del_pilar",
+  "name": "Marcelo H. del Pilar",
+  "short_name": "Del Pilar",
+  "health": 1000,
+  "walk_speed": 2.1,
+  "back_speed": 1.7,
+  "jump_velocity": 7.6,
+  "jump_speed_x": 2.6,
+  "look": "del_pilar",
+  "style_order": ["journalist"],
+  "normals": {},
+  "styles": {
+    "journalist": {
+      "label": "Journalist",
+      "look": "del_pilar",
+      "blurb": "Plaridel of La Solidaridad. Quick on his feet, sharp with the press.",
+      "gauge_name": "Press",
+      "gauge_color": "#ffd166",
+      "specials": [
+        {
+          "id": "press_run", "name": "Press Run", "motion": "qcf", "buttons": ["lp", "hp"],
+          "startup": 10, "active": 1, "recovery": 22, "damage": 60, "hitstun": 18, "blockstun": 12,
+          "projectile": {"speed": 4.0, "size": [14, 12], "offset": [24, -50], "color": "#ece6d6", "shape": "newspaper", "life": 150},
+          "heavy": {"projectile": {"speed": 5.4}}
+        },
+        {
+          "id": "plaridel", "name": "Plaridel", "motion": "ff", "buttons": ["lk", "hk"], "anim": "lunge_kick",
+          "startup": 4, "active": 12, "recovery": 16, "move_x": 6.5, "damage": 75, "hitstun": 20, "blockstun": 12, "cancel": true,
+          "hitbox": [6, -46, 40, 18]
+        },
+        {
+          "id": "headline", "name": "Headline", "motion": "dp", "buttons": ["lp", "hp"], "prop": "book",
+          "startup": 4, "active": 9, "recovery": 26, "invuln": [0, 7], "damage": 100, "knockdown": true, "launch": 5.5,
+          "hitbox": [4, -96, 28, 68]
+        },
+        {
+          "id": "la_solidaridad", "name": "La Solidaridad", "kind": "super", "motion": "qcf2", "buttons": ["lp+hp"], "prop": "book", "anim": "cast",
+          "gauge_cost": 100, "startup": 8, "active": 1, "recovery": 36, "invuln": [0, 12],
+          "damage": 290, "hitstun": 30, "knockdown": true, "launch": 6.0, "hitstop": 12,
+          "projectile": {"speed": 3.0, "size": [22, 60], "grow": [0.5, 0.25], "offset": [22, -36], "color": "#ffd166", "shape": "wave", "life": 80}
+        }
+      ]
+    }
+  }
+}

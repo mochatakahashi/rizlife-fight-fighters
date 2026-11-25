@@ -89,9 +89,9 @@ func _draw_player(i: int) -> void:
 	# Name, style and round wins.
 	var nm := f.hud_name().to_upper()
 	if left:
-		Gfx.text(self, Vector2(38, 31), nm, 9, Palette.TEXT, "left", 3)
+		Gfx.text(self, Vector2(38, 31), nm, 9, Palette.TEXT, "left", 3, null, 150.0)
 	else:
-		Gfx.text(self, Vector2(442, 31), nm, 9, Palette.TEXT, "right", 3)
+		Gfx.text(self, Vector2(442, 31), nm, 9, Palette.TEXT, "right", 3, null, 150.0)
 	for k in int(fight.rounds_to_win):
 		var cx: float = (212.0 - k * 10.0) if left else (268.0 + k * 10.0)
 		var won := f.round_wins > k
@@ -120,10 +120,10 @@ func _draw_player(i: int) -> void:
 	var tag := str(st.get("gauge_name", "Gauge")).to_upper() + ("  MAX" if full else "")
 	if left:
 		Gfx.text(self, Vector2(4, 261), "P1", 8, pc, "left", 2)
-		Gfx.text(self, Vector2(gx + 2, 251), tag, 7, gc.lightened(0.3), "left", 2)
+		Gfx.text(self, Vector2(gx + 2, 251), tag, 7, gc.lightened(0.3), "left", 2, null, 100.0)
 	else:
 		Gfx.text(self, Vector2(476, 261), "P2", 8, pc, "right", 2)
-		Gfx.text(self, Vector2(gx + gw - 2, 251), tag, 7, gc.lightened(0.3), "right", 2)
+		Gfx.text(self, Vector2(gx + gw - 2, 251), tag, 7, gc.lightened(0.3), "right", 2, null, 100.0)
 
 
 ## A bar leaning toward the middle of the screen.
@@ -184,9 +184,9 @@ func _draw_event() -> void:
 	var ribbon := Rect2(240 - 130 * k, 56, 260 * k, 26)
 	Gfx.hgradient(self, Rect2(ribbon.position, Vector2(ribbon.size.x / 2.0, ribbon.size.y)), Color(0, 0, 0, 0), Color(0.03, 0.02, 0.08, 0.7 * fade))
 	Gfx.hgradient(self, Rect2(ribbon.position + Vector2(ribbon.size.x / 2.0, 0), Vector2(ribbon.size.x / 2.0, ribbon.size.y)), Color(0.03, 0.02, 0.08, 0.7 * fade), Color(0, 0, 0, 0))
-	Gfx.text(self, Vector2(240, 70), text, 13, Color(c, fade), "center", 3)
+	Gfx.text(self, Vector2(240, 70), text, 13, Color(c, fade), "center", 3, null, 250.0)
 	if str(e.get("sub", "")) != "":
-		Gfx.text(self, Vector2(240, 79), str(e.get("sub", "")), 7, Color(Palette.TEXT, fade), "center", 2)
+		Gfx.text(self, Vector2(240, 79), str(e.get("sub", "")), 7, Color(Palette.TEXT, fade), "center", 2, null, 250.0)
 
 
 func _draw_banner() -> void:
@@ -203,10 +203,10 @@ func _draw_banner() -> void:
 	Gfx.hgradient(self, Rect2(40, 106, 200, 34), Color(0, 0, 0, 0), Color(0.03, 0.02, 0.08, 0.6 * a))
 	Gfx.hgradient(self, Rect2(240, 106, 200, 34), Color(0.03, 0.02, 0.08, 0.6 * a), Color(0, 0, 0, 0))
 	draw_set_transform(Vector2(240, 133), 0.0, Vector2(s, s))
-	Gfx.text(self, Vector2.ZERO, _banner, 30, Color(Palette.GOLD.lightened(0.1), a), "center", 6)
+	Gfx.text(self, Vector2.ZERO, _banner, 30, Color(Palette.GOLD.lightened(0.1), a), "center", 6, null, 420.0)
 	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 	if fight.sub_banner != "":
-		Gfx.text(self, Vector2(240, 152), fight.sub_banner, 10, Color(Palette.TEXT, a), "center", 3)
+		Gfx.text(self, Vector2(240, 152), fight.sub_banner, 10, Color(Palette.TEXT, a), "center", 3, null, 420.0)
 
 
 func _draw_pause(i: int) -> void:
@@ -215,16 +215,16 @@ func _draw_pause(i: int) -> void:
 	var panel := Rect2(60, 20, 360, 232)
 	Gfx.panel(self, panel, Color(Palette.PANEL, 0.97), Palette.GOLD, 8, 10)
 	Gfx.text(self, Vector2(240, 42), "PAUSED  ·  P%d" % (i + 1), 16, Palette.GOLD, "center", 3)
-	Gfx.text(self, Vector2(240, 55), "%s  ·  %s style" % [f.short_name, str(f.style_data().get("label", ""))], 9, Palette.MUTED, "center", 0, ThemeDB.fallback_font)
+	Gfx.text(self, Vector2(240, 55), "%s  ·  %s style" % [f.short_name, str(f.style_data().get("label", ""))], 9, Palette.MUTED, "center", 0, ThemeDB.fallback_font, 330.0)
 	var y := 74.0
 	for m in f.style_data().get("specials", []):
 		var move_name := str(m.get("name", ""))
 		if m.has("assist"):
 			move_name = "%s  -  %s" % [str(CharacterArt.look(str(m["assist"])).get("name", "")), move_name]
-		Gfx.text(self, Vector2(84, y), move_name, 9, Palette.TEXT, "left", 0, ThemeDB.fallback_font)
-		Gfx.text(self, Vector2(396, y), notation(m), 9, Palette.TEAL, "right")
+		Gfx.text(self, Vector2(84, y), move_name, 9, Palette.TEXT, "left", 0, ThemeDB.fallback_font, 220.0)
+		Gfx.text(self, Vector2(396, y), notation(m), 9, Palette.TEAL, "right", 0, null, 90.0)
 		y += 13.0
-	Gfx.text(self, Vector2(240, 214), "X = light punch   Y = heavy punch   A = light kick   B = heavy kick   LB = style", 7, Palette.MUTED, "center", 0, ThemeDB.fallback_font)
+	Gfx.text(self, Vector2(240, 214), "X = light punch   Y = heavy punch   A = light kick   B = heavy kick   LB = style", 7, Palette.MUTED, "center", 0, ThemeDB.fallback_font, 340.0)
 	var mouse := get_local_mouse_position()
 	for b in [[RESUME_RECT, "RESUME  (Start)"], [QUIT_RECT, "QUIT  (B)"]]:
 		var r: Rect2 = b[0]

@@ -1,0 +1,47 @@
+{
+  "id": "blumentritt",
+  "name": "Ferdinand Blumentritt",
+  "short_name": "Blumentritt",
+  "health": 1000,
+  "walk_speed": 1.8,
+  "back_speed": 1.6,
+  "jump_velocity": 7.4,
+  "jump_speed_x": 2.4,
+  "look": "blumentritt",
+  "style_order": ["scholar"],
+  "normals": {},
+  "styles": {
+    "scholar": {
+      "label": "Scholar",
+      "look": "blumentritt",
+      "blurb": "Fights from far away with letters, the way their friendship lived.",
+      "gauge_name": "Letters",
+      "gauge_color": "#7b8cff",
+      "damage_mult": 0.95,
+      "specials": [
+        {
+          "id": "correspondence", "name": "Correspondence", "motion": "qcf", "buttons": ["lp", "hp"],
+          "startup": 11, "active": 1, "recovery": 22, "damage": 60, "hitstun": 18, "blockstun": 12,
+          "projectile": {"speed": 4.2, "size": [14, 10], "offset": [24, -52], "color": "#f5f0e1", "shape": "letter", "life": 150},
+          "heavy": {"projectile": {"speed": 6.0}}
+        },
+        {
+          "id": "field_notes", "name": "Field Notes", "motion": "qcb", "buttons": ["lp", "hp"], "height": "overhead",
+          "startup": 12, "active": 1, "recovery": 24, "damage": 65, "hitstun": 18,
+          "projectile": {"speed": 2.6, "vy": -4.0, "gravity": 0.15, "size": [12, 16], "offset": [18, -60], "color": "#fff4d6", "shape": "page", "life": 200}
+        },
+        {
+          "id": "prologue", "name": "Prologue", "motion": "dp", "buttons": ["lp", "hp"], "prop": "book",
+          "startup": 5, "active": 8, "recovery": 26, "invuln": [0, 7], "damage": 95, "knockdown": true, "launch": 5.0,
+          "hitbox": [4, -94, 28, 66]
+        },
+        {
+          "id": "last_letter", "name": "The Last Letter", "kind": "super", "motion": "qcf2", "buttons": ["lp+hp"], "anim": "cast",
+          "gauge_cost": 100, "startup": 8, "active": 1, "recovery": 36, "invuln": [0, 12],
+          "damage": 280, "hitstun": 30, "knockdown": true, "launch": 6.0, "hitstop": 12,
+          "projectile": {"speed": 3.6, "size": [40, 28], "offset": [30, -44], "color": "#f5f0e1", "shape": "letter", "life": 130}
+        }
+      ]
+    }
+  }
+}

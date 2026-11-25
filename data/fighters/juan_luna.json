@@ -1,0 +1,44 @@
+{
+  "id": "juan_luna",
+  "name": "Juan Luna",
+  "short_name": "Juan Luna",
+  "health": 1000,
+  "walk_speed": 2.0,
+  "back_speed": 1.7,
+  "jump_velocity": 7.6,
+  "jump_speed_x": 2.6,
+  "look": "juan_luna",
+  "style_order": ["painter"],
+  "normals": {},
+  "styles": {
+    "painter": {
+      "label": "Painter",
+      "look": "juan_luna",
+      "blurb": "Paints from range, then lunges with the foil he fenced Rizal with.",
+      "gauge_name": "Paint",
+      "gauge_color": "#e76f51",
+      "specials": [
+        {
+          "id": "paint_splash", "name": "Paint Splash", "motion": "qcf", "buttons": ["lp", "hp"],
+          "startup": 11, "active": 1, "recovery": 22, "damage": 60, "hitstun": 18, "blockstun": 12,
+          "projectile": {"speed": 3.6, "vy": -1.6, "gravity": 0.05, "size": [12, 12], "offset": [24, -52], "color": "#e63946", "shape": "paint", "life": 150}
+        },
+        {
+          "id": "brush_stroke", "name": "Brush Stroke", "motion": "qcb", "buttons": ["lk", "hk"], "prop": "brush", "anim": "swing_low",
+          "startup": 9, "active": 5, "recovery": 20, "height": "low", "damage": 80, "knockdown": true, "launch": 3.0,
+          "hitbox": [8, -18, 44, 16]
+        },
+        {
+          "id": "sunday_duel", "name": "Sunday Duel", "motion": "charge_bf", "buttons": ["lp", "hp"], "prop": "foil", "anim": "lunge",
+          "startup": 7, "active": 8, "recovery": 20, "move_x": 6.0, "damage": 90, "hitstun": 20, "hitbox": [8, -56, 54, 8]
+        },
+        {
+          "id": "spoliarium", "name": "Spoliarium", "kind": "super", "motion": "qcf2", "buttons": ["lp+hp"], "prop": "palette", "anim": "cast",
+          "gauge_cost": 100, "startup": 8, "active": 1, "recovery": 38, "invuln": [0, 12],
+          "damage": 300, "hitstun": 30, "knockdown": true, "launch": 6.0, "hitstop": 12,
+          "projectile": {"speed": 2.8, "size": [44, 34], "offset": [32, -44], "color": "#c9a24a", "shape": "canvas", "life": 140}
+        }
+      ]
+    }
+  }
+}

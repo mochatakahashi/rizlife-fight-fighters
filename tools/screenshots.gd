@@ -3,7 +3,7 @@ extends Node
 ##     godot --path . res://tools/screenshots.tscn -- --out=C:/some/folder
 ## Without --out the images go to user://screenshots. Uses a throwaway leaderboard file.
 
-const GALLERY := ["rizal_writer", "rizal_lovers", "ibarra", "simoun", "elias", "maria_clara", "padre_damaso", "padre_salvi", "sisa",
+const GALLERY := ["rizal_writer", "rizal_lovers", "ibarra", "simoun", "elias", "maria_clara", "padre_damaso", "padre_salvi", "sisa", "teodora", "paciano", "blumentritt", "del_pilar", "juan_luna",
 	"segunda", "valenzuela", "rivera", "consuelo", "seiko", "beckett", "nelly", "suzanne", "josephine"]
 
 var out_dir := "user://screenshots"
@@ -31,10 +31,13 @@ func _ready() -> void:
 	await _shot("res://scenes/main_menu.tscn", "01_title")
 	await _shot("res://scenes/names.tscn", "02_names")
 	await _shot("res://scenes/select.tscn", "03_select")
+	await _shot("res://scenes/select.tscn", "03b_select_lovers", func(n): Game.players[0]["style"] = "lovers", func(n): n._mouse = Vector2(87.5, 248))
+	Game.players[0]["style"] = "writer"
 	await _shot("res://scenes/select.tscn", "04_stage", func(n): n.choosing_stage = true)
 	await _shot("res://scenes/fight.tscn", "05_fight", _setup_fight.bind("writer", "madrid"), _play_quill)
 	await _shot("res://scenes/fight.tscn", "06_lovers_assist", _setup_fight.bind("lovers", "paris"), _play_assist)
 	await _shot("res://scenes/fight.tscn", "06b_new_fighters", _setup_pair.bind("maria_clara", "devotion", "padre_damaso", "friar", "calamba"), _play_sermon)
+	await _shot("res://scenes/fight.tscn", "06c_life_fighters", _setup_pair.bind("juan_luna", "painter", "paciano", "revolutionary", "manila"), _play_spoliarium)
 	await _shot("res://scenes/fight.tscn", "07_pause", _setup_fight.bind("writer", "berlin"), func(f): f.step(); f.paused_by = 0)
 	await _shot("res://scenes/quiz.tscn", "08_quiz")
 	await _shot("res://scenes/leaderboard.tscn", "09_leaderboard")
@@ -75,14 +78,14 @@ func _gallery() -> Control:
 	view.draw.connect(func():
 		Gfx.vgradient(view, Rect2(0, 0, 480, 270), Color("1d2150"), Color("0b0c1a"))
 		for i in GALLERY.size():
-			var row := i / 9
-			var col := i % 9
-			var feet := Vector2(30 + col * 52, 118 + row * 128)
+			var row := i / 8
+			var col := i % 8
+			var feet := Vector2(34 + col * 59, 80 + row * 88)
 			view.draw_set_transform(feet, 0.0, Vector2(1.0, 0.26))
 			view.draw_circle(Vector2.ZERO, 16.0, Color(0, 0, 0, 0.4))
 			view.draw_set_transform_matrix(Transform2D.IDENTITY)
-			CharacterArt.draw(view, CharacterArt.look(GALLERY[i]), CharacterArt.pose("stand", 30.0), 1, feet, {"scale": 1.25})
-			Gfx.text(view, feet + Vector2(0, 12), GALLERY[i].replace("_", " "), 6, Palette.TEXT, "center", 2)
+			CharacterArt.draw(view, CharacterArt.look(GALLERY[i]), CharacterArt.pose("stand", 30.0), 1, feet, {"scale": 0.95})
+			Gfx.text(view, feet + Vector2(0, 9), GALLERY[i].replace("_", " "), 6, Palette.TEXT, "center", 2, null, 56.0)
 	)
 	return view
 
@@ -112,6 +115,16 @@ func _play_sermon(f: Fight) -> void:
 	var qcb := ScriptedInput.hold(0, 1, 2) + ScriptedInput.hold(-1, 1, 2) + ScriptedInput.hold(-1, 0, 2)
 	(f.config["sources"][1] as ScriptedInput).add(qcb + ScriptedInput.hold(0, 1, 2) + ScriptedInput.hold(-1, 1, 2) + ScriptedInput.hold(-1, 0, 1, {"lp": true, "hp": true}))
 	for i in 62:
+		f.step()
+
+
+## Juan Luna unveils the Spoliarium at Paciano.
+func _play_spoliarium(f: Fight) -> void:
+	_stage_moment(f)
+	f.fighters[0].gauge = Fighter.GAUGE_MAX
+	var qcf := ScriptedInput.hold(0, 1, 2) + ScriptedInput.hold(1, 1, 2) + ScriptedInput.hold(1, 0, 2)
+	(f.config["sources"][0] as ScriptedInput).add(qcf + ScriptedInput.hold(0, 1, 2) + ScriptedInput.hold(1, 1, 2) + ScriptedInput.hold(1, 0, 1, {"lp": true, "hp": true}))
+	for i in 66:
 		f.step()
 
 

@@ -1,37 +1,12 @@
 [
-  {
-    "id": "rizal",
-    "look": "rizal_writer",
-    "name": "José Rizal",
-    "role": "Switches between the Writer and Lovers styles (Physician later).",
-    "playable": true
-  },
-  {
-    "id": "ibarra",
-    "look": "ibarra",
-    "name": "Ibarra / Simoun",
-    "role": "Counter fighter. Full Rage turns him into Simoun.",
-    "playable": true
-  },
-  {
-    "id": "elias",
-    "look": "elias",
-    "name": "Elias",
-    "role": "Mobile boatman with a self-sacrifice super.",
-    "playable": true
-  },
-  {
-    "id": "maria_clara",
-    "look": "maria_clara",
-    "name": "María Clara",
-    "role": "Defensive counter-puncher with a bell shockwave.",
-    "playable": true
-  },
-  {
-    "id": "padre_damaso",
-    "look": "padre_damaso",
-    "name": "Padre Dámaso",
-    "role": "Slow, heavy grappler with huge damage.",
-    "playable": true
-  }
+  {"id": "rizal", "look": "rizal_writer", "name": "José Rizal", "role": "Switches between the Writer and Lovers styles.", "playable": true},
+  {"id": "ibarra", "look": "ibarra", "name": "Ibarra / Simoun", "role": "Counter fighter; full Rage turns him into Simoun.", "playable": true},
+  {"id": "elias", "look": "elias", "name": "Elias", "role": "The fast boatman, fighting with his oar.", "playable": true},
+  {"id": "maria_clara", "look": "maria_clara", "name": "María Clara", "role": "Defensive counter-puncher with a bell shockwave.", "playable": true},
+  {"id": "padre_damaso", "look": "padre_damaso", "name": "Padre Dámaso", "role": "Slow, heavy grappler with huge damage.", "playable": true},
+  {"id": "teodora", "look": "teodora", "name": "Teodora Alonso", "role": "His mother and first teacher. Patient zoner.", "playable": true},
+  {"id": "paciano", "look": "paciano", "name": "Paciano Rizal", "role": "His elder brother. A hard-hitting bolo charger.", "playable": true},
+  {"id": "blumentritt", "look": "blumentritt", "name": "Ferdinand Blumentritt", "role": "His Austrian best friend. Fights with letters.", "playable": true},
+  {"id": "del_pilar", "look": "del_pilar", "name": "Marcelo H. del Pilar", "role": "Plaridel of La Solidaridad. Fast rushdown.", "playable": true},
+  {"id": "juan_luna", "look": "juan_luna", "name": "Juan Luna", "role": "Painter of the Spoliarium, with paint and foil.", "playable": true}
 ]

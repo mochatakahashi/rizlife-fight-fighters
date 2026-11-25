@@ -46,7 +46,7 @@ Supers are `QCF x2 + X+Y` and need a full gauge.
 |---|---|
 | 1. Prototype: Rizal, one stage | Done, with all 6 stages drawn |
 | 2. Core: Lovers and Writer styles, quiz | Done: both styles, LB switching, the quiz after every match |
-| 3. Content: four more fighters, stages | Done: all five fighters are playable (Rizal, Ibarra/Simoun, Elias, María Clara, Padre Dámaso) on six stages |
+| 3. Content: four more fighters, stages | Done, and more: ten fighters from Rizal's novels and his real life, on six stages |
 | 4. Polish: art, sound, playtest | Art: dressed, animated characters, lit stages, hit effects, a modern HUD and screen fades. Sound and playtesting are not started. |
 
 **Screens:** title → player names → fighter/style select → stage select → fight → Rizal question → leaderboard (rematch, select, or menu).
@@ -76,6 +76,12 @@ Every character is drawn by `scripts/art/character_art.gd` in a costume from `da
 | Elias | Athletic, long unkempt black hair, dark striped shirt, barefoot | **His oar**, the "wide paddle" he steers with in the *Noli* | `QCF + A/B` Oar Sweep (low), `F, F + A/B` River Dash, `QCF x2 + X+Y` Sacrifice (costs him 100 health) |
 | María Clara | Piña baro't saya with tapis, pearls in her hair, skin "white as cotton" | Her fan, her locket, her veil and the convent bell | `QCB + X/Y` Veil Counter, `QCF + X` Locket Throw, `QCF x2 + X+Y` Convent Bell (a growing shockwave) |
 | Padre Dámaso | Franciscan habit and cord, graying tonsure, "herculean frame", bare feet | His hands (a grappler) and his sermon | `360 + X` Sermon Slam (command grab), `[D] U + A/B` Pulpit Pound (overhead), `QCF x2 + X+Y` Hell Sermon (book raised, fire-and-brimstone shockwave) |
+
+| Teodora Alonso | His mother, in a dark baro't saya with a graying bun | The moth from the story she read him, a book, and a lamp | `QCF + X/Y` The Moth's Story (a fluttering moth), `QCB + X/Y` First Lesson (counter), `DP + X/Y` Firm Hand, `QCF x2 + X+Y` Mother's Lamp |
+| Paciano Rizal | His elder brother: farmer's camisa, red sash, moustache | His bolo, and the coins he secretly sent for Rizal's studies | `QCF + A/B` Harvest Sweep (low), `QCB + X` Secret Fund (arcing coin), `[B] F + X/Y` General's Charge, `QCF x2 + X+Y` Revolution |
+| Ferdinand Blumentritt | His Austrian best friend: grey suit, beard, spectacles | Letters, field notes, and Rizal's last letter | `QCF + X/Y` Correspondence, `QCB + X/Y` Field Notes (arcing, overhead), `DP + X/Y` Prologue, `QCF x2 + X+Y` The Last Letter |
+| Marcelo H. del Pilar | "Plaridel": dark suit, bow tie, moustache | Copies of *La Solidaridad* | `QCF + X/Y` Press Run, `F, F + A/B` Plaridel (dash), `DP + X/Y` Headline, `QCF x2 + X+Y` La Solidaridad |
+| Juan Luna | Painter: frock coat, red cravat, moustache, brush in hand | Paint, his brush, the foil he fenced Rizal with on Sundays, and the *Spoliarium* | `QCF + X/Y` Paint Splash, `QCB + A/B` Brush Stroke (low), `[B] F + X/Y` Sunday Duel, `QCF x2 + X+Y` Spoliarium |
 
 Padre Salvi ("thin, wasted, and pale") and Sisa are drawn too, ready for PvE.
 
@@ -118,7 +124,7 @@ Run `godot --path . res://tools/screenshots.tscn` to get `00_costumes.png`, ever
 ```
 data/                  Everything you'll tune or write, in JSON
   rules.json           term name, rounds, timers, points
-  roster.json          the 5 fighters on the select screen
+  roster.json          the 10 fighters on the select screen
   stages.json          the 6 stages, their question topics and colours
   looks.json           every character's costume, including Rizal's nine loves
   questions.json       the Rizal question bank
@@ -181,7 +187,7 @@ Add entries to `data/questions.json`:
 
 - `answer` counts from 0.
 - `stage` must match a stage id, or be `"general"`.
-- The 14 sample questions are placeholders. Aim for about 10 per stage, and have your instructor check them.
+- The 18 sample questions are placeholders. They include questions about Paciano, Juan Luna, del Pilar and Blumentritt. Aim for about 10 per stage, and have your instructor check them.
 - The smoke test catches broken entries.
 
 ## Tests

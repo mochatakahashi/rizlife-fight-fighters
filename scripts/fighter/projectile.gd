@@ -2,8 +2,10 @@ class_name Projectile
 extends Node2D
 ## A thrown or summoned attack: quills, hearts, letters, lamp bombs, delayed hits.
 ## Its look and path come from the move's "projectile" block in the fighter's JSON.
-## shape: rect, orb, heart, quill, letter, ink, tear, lamp, pillar, locket, wave.
+## shape: rect, orb, heart, quill, letter, ink, tear, lamp, pillar, locket, wave, page,
+## moth, coin, newspaper, paint, canvas.
 ## "grow": [w, h] makes it (and its hitbox) grow every frame, like a spreading shockwave.
+## "wobble": how far it bobs up and down as it flies (Teodora's moth).
 
 const TRAIL := 7
 
@@ -21,6 +23,7 @@ var shape := "rect"
 var spent := false
 var age := 0
 var grow := Vector2.ZERO
+var wobble := 0.0
 var _trail: Array[Vector2] = []
 
 
@@ -41,6 +44,7 @@ func setup(fighter: Fighter, m: Dictionary) -> void:
 	shape = str(p.get("shape", "rect"))
 	var g: Array = p.get("grow", [0, 0])
 	grow = Vector2(float(g[0]), float(g[1]))
+	wobble = float(p.get("wobble", 0.0))
 
 
 func tick() -> void:
@@ -53,6 +57,8 @@ func tick() -> void:
 			_trail.pop_back()
 		size += grow
 		position += velocity
+		if wobble > 0.0:
+			position.y += cos(age * 0.22) * wobble * 0.22
 		velocity.y += gravity
 		life -= 1
 	if life <= 0 or position.x < -40.0 or position.x > 520.0 or position.y > Fighter.GROUND_Y + 4.0:
@@ -130,6 +136,47 @@ func _draw() -> void:
 				var ly := -h / 2.0 + 5.0 + k * (h - 8.0) / 7.0
 				draw_line(Vector2(-w / 2.0 + 3.0, ly), Vector2(w / 2.0 - 3.0 - (k % 3) * 3.0, ly), Color(0.25, 0.2, 0.35, 0.8 * opacity), 1.0, true)
 			draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+		"moth":
+			# The moth from the story Teodora read young José: wings flutter as it flies.
+			var flap := 0.4 + 0.6 * absf(sin(age * 0.5))
+			var wing := Color(c.lightened(0.2), opacity)
+			for side in [-1.0, 1.0]:
+				draw_colored_polygon(PackedVector2Array([Vector2(0, 0), Vector2(-4.0, side * 6.0 * flap), Vector2(3.0, side * 5.0 * flap)]), wing)
+				draw_colored_polygon(PackedVector2Array([Vector2(0, 0), Vector2(-5.0, side * 3.0 * flap), Vector2(-1.0, side * 3.5 * flap)]), c.darkened(0.15))
+			draw_line(Vector2(-3, 0), Vector2(3, 0), ink, 1.6, true)
+			draw_line(Vector2(3, 0), Vector2(5, -2), ink, 0.5, true)
+			draw_line(Vector2(3, 0), Vector2(5, 2), ink, 0.5, true)
+		"coin":
+			var squash := absf(cos(age * 0.3))
+			draw_set_transform(Vector2.ZERO, 0.0, Vector2(maxf(0.25, squash), 1.0))
+			draw_circle(Vector2.ZERO, r + 0.8, ink, true, -1.0, true)
+			draw_circle(Vector2.ZERO, r, c, true, -1.0, true)
+			draw_circle(Vector2.ZERO, r * 0.6, c.darkened(0.2), false, 0.8, true)
+			draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+		"newspaper":
+			# A folded copy of La Solidaridad, spinning.
+			draw_set_transform(Vector2.ZERO, age * 0.25, Vector2.ONE)
+			var box := Rect2(-size / 2.0, size)
+			draw_rect(box.grow(0.8), ink)
+			draw_rect(box, c)
+			draw_rect(Rect2(box.position + Vector2(1.5, 1.5), Vector2(box.size.x - 3.0, 2.5)), Color(0.15, 0.15, 0.2, opacity))
+			for k in 3:
+				draw_line(box.position + Vector2(1.5, 6.0 + k * 2.5), box.position + Vector2(box.size.x - 1.5, 6.0 + k * 2.5), Color(0.3, 0.3, 0.35, opacity), 0.6, true)
+			draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+		"paint":
+			for k in 4:
+				var off := Vector2(-k * 3.0 * signf(dir.x), sin(age * 0.4 + k * 1.3) * 1.5)
+				draw_circle(off, r * (1.0 - k * 0.18) + 0.8, ink, true, -1.0, true)
+				draw_circle(off, r * (1.0 - k * 0.18), c.lerp(Color("2ec4b6"), k * 0.25), true, -1.0, true)
+		"canvas":
+			# The Spoliarium: a huge framed canvas, dark red inside a gold frame.
+			var box := Rect2(-size / 2.0, size)
+			draw_rect(box.grow(1.0), ink)
+			draw_rect(box, Color("c9a24a"))
+			draw_rect(box.grow(-2.5), Color("5a1e14"))
+			draw_rect(Rect2(box.position + Vector2(4, box.size.y * 0.55), Vector2(box.size.x - 8, box.size.y * 0.3)), Color("8a3a22"))
+			for k in 3:
+				draw_circle(box.position + Vector2(8.0 + k * 9.0, box.size.y * 0.5), 2.2, Color("d8a070"), true, -1.0, true)
 		"locket":
 			draw_line(Vector2(-r * 0.2, -r * 1.6), Vector2(0, -r), Color(0.95, 0.85, 0.5, opacity), 0.8, true)
 			draw_circle(Vector2.ZERO, r + 0.8, ink, true, -1.0, true)

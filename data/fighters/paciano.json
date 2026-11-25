@@ -1,0 +1,45 @@
+{
+  "id": "paciano",
+  "name": "Paciano Rizal",
+  "short_name": "Paciano",
+  "health": 1050,
+  "walk_speed": 2.0,
+  "back_speed": 1.7,
+  "jump_velocity": 7.6,
+  "jump_speed_x": 2.6,
+  "look": "paciano",
+  "style_order": ["revolutionary"],
+  "normals": {},
+  "styles": {
+    "revolutionary": {
+      "label": "Revolutionary",
+      "look": "paciano",
+      "blurb": "The farmer brother who became a general. Hits hard with his bolo.",
+      "gauge_name": "Resolve",
+      "gauge_color": "#e63946",
+      "damage_mult": 1.05,
+      "specials": [
+        {
+          "id": "harvest_sweep", "name": "Harvest Sweep", "motion": "qcf", "buttons": ["lk", "hk"], "prop": "bolo", "anim": "swing_low",
+          "startup": 9, "active": 5, "recovery": 20, "height": "low", "damage": 85, "knockdown": true, "launch": 3.0,
+          "hitbox": [8, -18, 46, 16]
+        },
+        {
+          "id": "secret_fund", "name": "Secret Fund", "motion": "qcb", "buttons": ["lp"],
+          "startup": 10, "active": 1, "recovery": 22, "damage": 55, "hitstun": 16, "blockstun": 12,
+          "projectile": {"speed": 3.4, "vy": -3.4, "gravity": 0.16, "size": [10, 10], "offset": [20, -56], "color": "#f4b400", "shape": "coin", "life": 160}
+        },
+        {
+          "id": "generals_charge", "name": "General's Charge", "motion": "charge_bf", "buttons": ["lp", "hp"], "prop": "bolo", "anim": "lunge",
+          "startup": 6, "active": 10, "recovery": 18, "move_x": 5.5, "damage": 95, "knockdown": true, "launch": 4.0,
+          "hitbox": [8, -62, 34, 24]
+        },
+        {
+          "id": "revolution", "name": "Revolution", "kind": "super", "motion": "qcf2", "buttons": ["lp+hp"], "prop": "bolo", "anim": "lunge",
+          "gauge_cost": 100, "startup": 5, "active": 16, "recovery": 30, "invuln": [0, 18], "move_x": 6.0,
+          "damage": 320, "knockdown": true, "launch": 7.0, "hitstop": 14, "hitbox": [6, -70, 44, 66]
+        }
+      ]
+    }
+  }
+}

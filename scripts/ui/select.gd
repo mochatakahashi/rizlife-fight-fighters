@@ -4,9 +4,13 @@ extends Control
 ##          right-click to undo, then pick a stage with the arrows and click FIGHT!
 ##   Keys / pad: left/right picks a fighter, up/down picks a style, LP (X) locks in, HK (B) goes back.
 
-const CARD := Vector2(80, 100)
+const CARD := Vector2(84, 74)
 const GAP := 8.0
-const CARDS_Y := 30.0
+const ROW_GAP := 4.0
+const COLS := 5
+const CARDS_Y := 24.0
+const PANEL_Y := 182.0
+const PANEL_H := 76.0
 const PREVIEW := Vector2(240, 135)
 
 var roster: Array = []
@@ -19,7 +23,7 @@ var stage_index := 0
 var _t := 0.0
 var _mouse := Vector2(-100, -100)
 var _spots: Array = []
-var _cur_x := [0.0, 0.0]
+var _cur_pos := [Vector2.ZERO, Vector2.ZERO]
 var _lift: Array = []
 var _pop := [0.0, 0.0]
 var _toast := ""
@@ -35,7 +39,7 @@ func _ready() -> void:
 	for i in 2:
 		cursor[i] = maxi(0, _roster_index(str(Game.players[i]["fighter"])))
 		style_index[i] = maxi(0, _styles(i).find(str(Game.players[i]["style"])))
-		_cur_x[i] = _card_rect(cursor[i]).position.x
+		_cur_pos[i] = _card_rect(cursor[i]).position
 	for k in roster.size():
 		_lift.append(0.0)
 	for k in Game.stages.size():
@@ -67,7 +71,7 @@ func _process(delta: float) -> void:
 	var follow := 1.0 - exp(-delta * 16.0)
 	var hover := _hover_card()
 	for i in 2:
-		_cur_x[i] = lerpf(_cur_x[i], _card_rect(cursor[i]).position.x, follow)
+		_cur_pos[i] = (_cur_pos[i] as Vector2).lerp(_card_rect(cursor[i]).position, follow)
 		_pop[i] = move_toward(_pop[i], 0.0, delta * 3.0)
 	for k in roster.size():
 		_lift[k] = lerpf(_lift[k], 1.0 if k == hover or k in cursor else 0.0, follow)
@@ -150,7 +154,7 @@ func _cpu_pick() -> void:
 		if Game.is_playable(str(roster[k].get("id", ""))):
 			playable.append(k)
 	cursor[1] = playable.pick_random()
-	_cur_x[1] = _card_rect(cursor[1]).position.x
+	_cur_pos[1] = _card_rect(cursor[1]).position
 	style_index[1] = randi() % maxi(1, _styles(1).size())
 	_lock(1)
 
@@ -180,7 +184,7 @@ func _back() -> void:
 		choosing_stage = false
 		for i in 2:
 			_unlock(i)
-	elif locked_in[0] and not _is_cpu(0) or (locked_in[1] and not _is_cpu(1)):
+	elif (locked_in[0] and not _is_cpu(0)) or (locked_in[1] and not _is_cpu(1)):
 		for i in 2:
 			_unlock(i)
 	else:
@@ -294,9 +298,12 @@ func _roster_index(id: String) -> int:
 	return -1
 
 
+## Cards are laid out in rows of five.
 func _card_rect(k: int) -> Rect2:
-	var total := roster.size() * CARD.x + (roster.size() - 1) * GAP
-	return Rect2(Vector2((480.0 - total) / 2.0 + k * (CARD.x + GAP), CARDS_Y), CARD)
+	var row_width := COLS * CARD.x + (COLS - 1) * GAP
+	var col := k % COLS
+	var row := k / COLS
+	return Rect2(Vector2((480.0 - row_width) / 2.0 + col * (CARD.x + GAP), CARDS_Y + row * (CARD.y + ROW_GAP)), CARD)
 
 
 ## The costume shown on a card: the style a player has chosen for it, or the default.
@@ -316,11 +323,11 @@ func _card_look(k: int) -> String:
 func _draw() -> void:
 	_spots.clear()
 	MenuBackdrop.paint(self, _t / 60.0)
-	Gfx.text(self, Vector2(240, 21), "CHOOSE YOUR FIGHTER", 15, Palette.GOLD, "center", 3)
-	var back := Rect2(8, 8, 48, 15)
+	Gfx.text(self, Vector2(240, 16), "CHOOSE YOUR FIGHTER", 13, Palette.GOLD, "center", 3)
+	var back := Rect2(8, 5, 46, 14)
 	var hot := _spot(back, "back")
 	Gfx.panel(self, back, Palette.PANEL_LIGHT if hot else Color(Palette.PANEL, 0.9), Palette.GOLD if hot else Color(1, 1, 1, 0.12), 7, 2)
-	Gfx.text(self, Vector2(back.get_center().x, back.position.y + 10.5), "< BACK", 7, Palette.GOLD if hot else Palette.TEXT, "center")
+	Gfx.text(self, Vector2(back.get_center().x, back.position.y + 10), "< BACK", 7, Palette.GOLD if hot else Palette.TEXT, "center")
 	for k in roster.size():
 		_draw_card(k)
 	for i in 2:
@@ -330,13 +337,13 @@ func _draw() -> void:
 	if _stage_anim > 0.0:
 		_draw_stage_picker()
 	else:
-		Gfx.text(self, Vector2(240, 262), "Click a fighter   ·   Right-click: undo   ·   Keys: Left/Right fighter, Up/Down style, X lock in, B back",
-			7, Palette.MUTED, "center", 0, ThemeDB.fallback_font)
+		Gfx.text(self, Vector2(240, 267), "Click a fighter   ·   Right-click: undo   ·   Keys: Left/Right fighter, Up/Down style, X lock in, B back",
+			7, Palette.MUTED, "center", 0, ThemeDB.fallback_font, 470.0)
 	if _toast_t > 0.0:
 		var a := clampf(_toast_t / 0.3, 0.0, 1.0)
-		var r := Rect2(140, 116, 200, 18)
+		var r := Rect2(130, 160, 220, 18)
 		Gfx.panel(self, r, Color(0.02, 0.02, 0.06, 0.9 * a), Color(Palette.GOLD, a), 9, 6)
-		Gfx.text(self, Vector2(240, 128), _toast, 8, Color(Palette.TEXT, a), "center", 0, ThemeDB.fallback_font)
+		Gfx.text(self, Vector2(240, 172), _toast, 8, Color(Palette.TEXT, a), "center", 0, ThemeDB.fallback_font, 210.0)
 
 
 func _draw_card(k: int) -> void:
@@ -345,25 +352,22 @@ func _draw_card(k: int) -> void:
 	var playable := Game.is_playable(id)
 	var lift := float(_lift[k])
 	var r := _card_rect(k)
-	r.position.y -= lift * 3.0
+	r.position.y -= lift * 2.0
 	_spot(r, "card:%d" % k)
 	var lk := CharacterArt.look(_card_look(k))
-	Gfx.panel(self, r, Color(Palette.PANEL, 0.95), Color(1, 1, 1, 0.08 + 0.25 * lift), 8, 5)
-	Gfx.glow(self, Vector2(r.get_center().x, r.end.y - 22), 46.0, Color(CharacterArt.main_color(lk).lightened(0.3), 0.25 + 0.2 * lift))
+	Gfx.panel(self, r, Color(Palette.PANEL, 0.95), Color(1, 1, 1, 0.08 + 0.25 * lift), 8, 4)
+	Gfx.glow(self, Vector2(r.get_center().x, r.end.y - 20), 40.0, Color(CharacterArt.main_color(lk).lightened(0.3), 0.22 + 0.2 * lift))
 	var kind := "stand"
 	for i in 2:
 		if cursor[i] == k:
 			kind = "win" if locked_in[i] else "idle"
-	var feet := Vector2(r.get_center().x, r.end.y - 17)
+	var feet := Vector2(r.get_center().x, r.end.y - 12)
 	draw_set_transform(feet, 0.0, Vector2(1.0, 0.25))
-	draw_circle(Vector2.ZERO, 16.0, Color(0, 0, 0, 0.45), true, -1.0, true)
+	draw_circle(Vector2.ZERO, 13.0, Color(0, 0, 0, 0.45), true, -1.0, true)
 	draw_set_transform_matrix(Transform2D.IDENTITY)
-	CharacterArt.draw(self, lk, CharacterArt.pose(kind, _t + k * 17.0), 1, feet, {"dim": 0.0 if playable else 0.5})
+	CharacterArt.draw(self, lk, CharacterArt.pose(kind, _t + k * 17.0), 1, feet, {"scale": 0.72, "dim": 0.0 if playable else 0.5})
 	var nm := str(entry.get("name", "")).split(" / ")[0]
-	Gfx.text(self, Vector2(r.get_center().x, r.end.y - 5), nm, 8, Palette.TEXT if playable else Palette.MUTED, "center", 2)
-	if not playable:
-		Gfx.panel(self, Rect2(r.end.x - 32, r.position.y + 5, 27, 11), Color(0, 0, 0, 0.6), Color(0, 0, 0, 0), 5, 0)
-		Gfx.text(self, Vector2(r.end.x - 18.5, r.position.y + 13), "SOON", 6, Palette.MUTED, "center")
+	Gfx.text(self, Vector2(r.get_center().x, r.end.y - 3), nm, 7, Palette.TEXT if playable else Palette.MUTED, "center", 2, null, CARD.x - 6.0)
 
 
 func _draw_cursor(i: int) -> void:
@@ -371,87 +375,85 @@ func _draw_cursor(i: int) -> void:
 		return
 	var pc: Color = Palette.PLAYER[i]
 	var both: bool = cursor[0] == cursor[1]
-	var r := Rect2(Vector2(_cur_x[i], CARDS_Y - float(_lift[cursor[i]]) * 3.0), CARD)
-	var grow := (2.0 if i == 0 or not both else -1.5) + float(_pop[i]) * 4.0
+	var r := Rect2((_cur_pos[i] as Vector2) - Vector2(0, float(_lift[cursor[i]]) * 2.0), CARD)
+	var grow := (1.5 if i == 0 or not both else -1.5) + float(_pop[i]) * 4.0
 	if locked_in[i]:
-		Gfx.glow(self, r.get_center(), 60.0, Color(pc, 0.18))
+		Gfx.glow(self, r.get_center(), 55.0, Color(pc, 0.18))
 	Gfx.panel(self, r.grow(grow), Color(0, 0, 0, 0), pc, 9, 0, 2)
-	var tag_x := r.position.x + (16.0 if i == 0 else CARD.x - 16.0)
-	Gfx.panel(self, Rect2(tag_x - 11, r.position.y - grow - 7, 22, 11), pc, Color(0, 0, 0, 0), 5, 2)
-	Gfx.text(self, Vector2(tag_x, r.position.y - grow + 1.5), "%dP" % (i + 1) if not _is_cpu(i) else "CPU", 7, Palette.BG, "center")
+	# The player tag sits inside the card's top corner, so it never covers the title.
+	var tag := Rect2(r.position.x + 3.0 if i == 0 else r.end.x - 25.0, r.position.y + 3.0, 22, 10)
+	Gfx.panel(self, tag, pc, Color(0, 0, 0, 0), 5, 2)
+	Gfx.text(self, Vector2(tag.get_center().x, tag.position.y + 8), "%dP" % (i + 1) if not _is_cpu(i) else "CPU", 6, Palette.BG, "center")
 
 
 func _draw_panel(i: int) -> void:
-	var r := Rect2(16.0 if i == 0 else 252.0, 140.0, 212.0, 108.0)
+	var r := Rect2(14.0 if i == 0 else 250.0, PANEL_Y, 216.0, PANEL_H)
 	var pc: Color = Palette.PLAYER[i]
 	var is_ready := bool(locked_in[i])
 	if is_ready:
-		Gfx.glow(self, r.get_center(), 130.0, Color(pc, 0.12))
+		Gfx.glow(self, r.get_center(), 120.0, Color(pc, 0.12))
 	Gfx.panel(self, r, Color(Palette.PANEL, 0.96), Color(pc, 0.9 if is_ready else 0.45), 10, 8)
-	var x := r.position.x + 10
+	var x := r.position.x + 9
 	var y := r.position.y
 	var entry: Dictionary = roster[cursor[i]]
 	var regular := ThemeDB.fallback_font
-	# Header: P1 badge, player name and the lock button.
-	Gfx.panel(self, Rect2(x, y + 7, 20, 11), pc, Color(0, 0, 0, 0), 5, 0)
-	Gfx.text(self, Vector2(x + 10, y + 15.5), "P%d" % (i + 1), 7, Palette.BG, "center")
+	# Header: P1 badge, player name, and the lock button.
+	Gfx.panel(self, Rect2(x, y + 5, 20, 11), pc, Color(0, 0, 0, 0), 5, 0)
+	Gfx.text(self, Vector2(x + 10, y + 13.5), "P%d" % (i + 1), 7, Palette.BG, "center")
 	var who := "CPU" if _is_cpu(i) else str(Game.players[i].get("name", ""))
 	if who != "P%d" % (i + 1):
-		Gfx.text(self, Vector2(x + 25, y + 16), who, 8, pc, "left", 0, regular)
+		Gfx.text(self, Vector2(x + 25, y + 14), who, 8, pc, "left", 0, regular, 100.0)
 	if not _is_cpu(i):
-		var lock := Rect2(r.end.x - 66, y + 6, 58, 14)
+		var lock := Rect2(r.end.x - 64, y + 4, 56, 13)
 		var hot := _spot(lock, "lock:%d" % i)
 		var fill := pc if not is_ready else (Palette.PANEL_LIGHT if hot else Palette.BG)
 		Gfx.panel(self, lock, fill.lightened(0.15) if hot and not is_ready else fill, pc, 7, 2)
-		Gfx.text(self, Vector2(lock.get_center().x, lock.position.y + 10), "CHANGE" if is_ready else "LOCK IN", 7, Palette.TEXT if is_ready else Palette.BG, "center")
+		Gfx.text(self, Vector2(lock.get_center().x, lock.position.y + 9.5), "CHANGE" if is_ready else "LOCK IN", 7, Palette.TEXT if is_ready else Palette.BG, "center")
 	else:
-		Gfx.text(self, Vector2(r.end.x - 10, y + 16), "READY!", 8, Palette.GOLD, "right")
-	Gfx.text(self, Vector2(x, y + 36), str(entry.get("name", "")), 14, Palette.TEXT, "left", 2)
-	draw_multiline_string(regular, Vector2(x, y + 48), str(entry.get("role", "")), HORIZONTAL_ALIGNMENT_LEFT, r.size.x - 20, 8, 2, Palette.MUTED)
+		Gfx.text(self, Vector2(r.end.x - 9, y + 14), "READY!", 8, Palette.GOLD, "right")
+	Gfx.text(self, Vector2(x, y + 31), str(entry.get("name", "")), 13, Palette.TEXT, "left", 2, null, r.size.x - 18)
+	Gfx.text(self, Vector2(x, y + 42), str(entry.get("role", "")), 7, Palette.MUTED, "left", 0, regular, r.size.x - 18)
 	var styles := _styles(i)
 	if styles.is_empty():
-		Gfx.text(self, Vector2(x, y + 76), "Coming in a later milestone", 8, Palette.MUTED, "left", 0, regular)
 		return
 	var st: Dictionary = Game.fighter_data(_fighter_id(i))["styles"][styles[style_index[i]]]
 	var gc := Color(str(st.get("gauge_color", "#2ec4b6")))
-	var label := str(st.get("label", ""))
+	var label := str(st.get("label", "")).to_upper() + " STYLE"
 	if styles.size() > 1:
-		var prev := Rect2(x, y + 66, 14, 14)
-		var next := Rect2(x + 106, y + 66, 14, 14)
-		for b in [[prev, "<", -1], [next, ">", 1]]:
+		for b in [[Rect2(x, y + 47, 12, 12), "<", -1], [Rect2(x + 108, y + 47, 12, 12), ">", 1]]:
 			var br: Rect2 = b[0]
 			var hot := _spot(br, "style:%d:%d" % [i, b[2]])
-			Gfx.panel(self, br, Palette.PANEL_LIGHT if hot else Palette.BG, Color(gc, 0.8), 7, 0)
-			Gfx.text(self, Vector2(br.get_center().x, br.position.y + 10.5), str(b[1]), 8, gc, "center")
-		Gfx.text(self, Vector2(x + 60, y + 76.5), label.to_upper() + " STYLE", 8, gc, "center")
+			Gfx.panel(self, br, Palette.PANEL_LIGHT if hot else Palette.BG, Color(gc, 0.8), 6, 0)
+			Gfx.text(self, Vector2(br.get_center().x, br.position.y + 9.5), str(b[1]), 8, gc, "center")
+		Gfx.text(self, Vector2(x + 60, y + 56), label, 8, gc, "center", 0, null, 90.0)
 	else:
-		Gfx.text(self, Vector2(x, y + 76.5), label.to_upper() + " STYLE", 8, gc, "left")
+		Gfx.text(self, Vector2(x, y + 56), label, 8, gc, "left", 0, null, r.size.x - 18)
 	var assists: Array = st.get("assists", [])
 	if assists.is_empty():
-		draw_multiline_string(regular, Vector2(x, y + 90), str(st.get("blurb", "")), HORIZONTAL_ALIGNMENT_LEFT, r.size.x - 20, 7, 2, Palette.MUTED)
-	else:
-		# Rizal's nine loves, who fight beside him in Lovers style.
-		Gfx.text(self, Vector2(x + 128, y + 76.5), "with his 9 loves", 7, Palette.PINK, "left", 0, regular)
-		var tip := ""
-		var fact := ""
-		for k in assists.size():
-			var lk := CharacterArt.look(str(assists[k]))
-			var c := Vector2(x + 10 + k * 21.5, y + 94)
-			if _spot(Rect2(c - Vector2(10, 9), Vector2(20, 18)), ""):
-				tip = "%s  ·  %s" % [str(lk.get("name", "")), str(lk.get("from", ""))]
-				fact = str(lk.get("fact", ""))
-				Gfx.glow(self, c, 14.0, Color(Palette.PINK, 0.5))
-			CharacterArt.draw_head(self, lk, c, 0.85)
-		if tip != "":
-			var tr := Rect2(r.get_center().x - 110, r.end.y - 132, 220, 28)
-			Gfx.panel(self, tr, Color(0.02, 0.02, 0.06, 0.96), Palette.PINK, 8, 6)
-			Gfx.text(self, Vector2(tr.get_center().x, tr.position.y + 11), tip, 8, Palette.PINK.lightened(0.3), "center")
-			Gfx.text(self, Vector2(tr.get_center().x, tr.position.y + 22), fact, 7, Palette.TEXT, "center", 0, regular)
+		Gfx.text(self, Vector2(x, y + 68), str(st.get("blurb", "")), 7, Palette.MUTED, "left", 0, regular, r.size.x - 18)
+		return
+	# Rizal's nine loves, who fight beside him in Lovers style. Hover a face to see who she is.
+	Gfx.text(self, Vector2(x + 128, y + 56), "with his 9 loves", 7, Palette.PINK, "left", 0, regular, 78.0)
+	var tip := ""
+	var fact := ""
+	for k in assists.size():
+		var lk := CharacterArt.look(str(assists[k]))
+		var c := Vector2(x + 9 + k * 21.5, y + 63)
+		if _spot(Rect2(c - Vector2(10, 8), Vector2(20, 16)), ""):
+			tip = "%s  ·  %s" % [str(lk.get("name", "")), str(lk.get("from", ""))]
+			fact = str(lk.get("fact", ""))
+			Gfx.glow(self, c, 13.0, Color(Palette.PINK, 0.5))
+		CharacterArt.draw_head(self, lk, c, 0.62)
+	if tip != "":
+		var tr := Rect2(r.get_center().x - 115, r.position.y - 32, 230, 28)
+		Gfx.panel(self, tr, Color(0.02, 0.02, 0.06, 0.97), Palette.PINK, 8, 6)
+		Gfx.text(self, Vector2(tr.get_center().x, tr.position.y + 11), tip, 8, Palette.PINK.lightened(0.3), "center", 0, null, 220.0)
+		Gfx.text(self, Vector2(tr.get_center().x, tr.position.y + 22), fact, 7, Palette.TEXT, "center", 0, regular, 220.0)
 
 
 func _draw_stage_picker() -> void:
 	var a := Gfx.ease_out(_stage_anim)
-	draw_rect(Rect2(-20, -20, 520, 310), Color(0.01, 0.01, 0.04, 0.65 * a))
+	draw_rect(Rect2(-20, -20, 520, 310), Color(0.01, 0.01, 0.04, 0.7 * a))
 	var r := Rect2(104, 24 + (1.0 - a) * 24.0, 272, 236)
 	Gfx.panel(self, r, Color(Palette.PANEL, 0.98), Palette.GOLD, 12, 14)
 	Gfx.text(self, Vector2(240, r.position.y + 18), "CHOOSE A STAGE", 12, Palette.GOLD, "center", 2)
@@ -464,7 +466,7 @@ func _draw_stage_picker() -> void:
 		Gfx.panel(self, br, Palette.PANEL_LIGHT if hot else Palette.BG, Palette.GOLD, 6, 0)
 		Gfx.text(self, Vector2(br.get_center().x, br.position.y + 18), str(b[1]), 10, Palette.GOLD, "center")
 	Gfx.text(self, Vector2(240, r.position.y + 178), str(s.get("name", "")).to_upper(), 14, Palette.TEXT, "center", 2)
-	Gfx.text(self, Vector2(240, r.position.y + 190), "Question topic: " + str(s.get("topic", "")), 7, Palette.TEAL, "center", 0, ThemeDB.fallback_font)
+	Gfx.text(self, Vector2(240, r.position.y + 190), "Question topic: " + str(s.get("topic", "")), 7, Palette.TEAL, "center", 0, ThemeDB.fallback_font, 256.0)
 	for k in Game.stages.size():
 		var on := k == stage_index
 		draw_circle(Vector2(240 - (Game.stages.size() - 1) * 5.0 + k * 10.0, r.position.y + 199), 2.4 if on else 1.6, Palette.GOLD if on else Palette.MUTED, true, -1.0, true)
@@ -477,4 +479,4 @@ func _draw_stage_picker() -> void:
 	Gfx.text(self, Vector2(fight.get_center().x, fight.position.y + 14), "FIGHT!", 11, Palette.BG, "center")
 	Gfx.panel(self, back, Palette.PANEL_LIGHT if hot_back else Palette.BG, Color(1, 1, 1, 0.25), 10, 2)
 	Gfx.text(self, Vector2(back.get_center().x, back.position.y + 13.5), "BACK", 8, Palette.TEXT, "center")
-	Gfx.text(self, Vector2(240, 266), "Left/Right or click the arrows   ·   X (LP) or FIGHT! to start   ·   B (HK) to go back", 7, Palette.MUTED, "center", 0, ThemeDB.fallback_font)
+	Gfx.text(self, Vector2(240, 267), "Left/Right or click the arrows   ·   X (LP) or FIGHT! to start   ·   B (HK) to go back", 7, Palette.MUTED, "center", 0, ThemeDB.fallback_font, 470.0)

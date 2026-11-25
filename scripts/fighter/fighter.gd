@@ -701,8 +701,8 @@ func _draw_assist(fade: float, flash: bool) -> void:
 	var ps := CharacterArt.pose(_attack_anim(), float(anim_t), attack_progress())
 	CharacterArt.draw(self, lk, ps, facing, Vector2.ZERO, {"alpha": fade, "flash": flash, "prop": str(move.get("prop", ""))})
 	var nm := str(lk.get("name", move["assist"]))
-	Gfx.text(self, Vector2(0, -80), nm, 8, Color(Palette.PINK.lightened(0.3), fade), "center", 3)
-	Gfx.text(self, Vector2(0, -72), str(lk.get("from", "")), 6, Color(Palette.TEXT, 0.85 * fade), "center", 2, ThemeDB.fallback_font)
+	Gfx.text(self, Vector2(0, -80), nm, 8, Color(Palette.PINK.lightened(0.3), fade), "center", 3, null, 120.0)
+	Gfx.text(self, Vector2(0, -72), str(lk.get("from", "")), 6, Color(Palette.TEXT, 0.85 * fade), "center", 2, ThemeDB.fallback_font, 120.0)
 
 
 func _pose() -> Dictionary:

@@ -70,9 +70,21 @@ static func bold_font() -> Font:
 	return _bold
 
 
-## Text with an outline, aligned around x: "left", "center" or "right".
-static func text(ci: CanvasItem, pos: Vector2, s: String, size: int, color: Color, align := "left", outline := 0, font: Font = null) -> void:
+## The largest size (up to `size`) at which `s` fits in `max_width`.
+static func fit_size(s: String, size: int, max_width: float, font: Font = null) -> int:
 	var f := font if font != null else bold_font()
+	var sz := size
+	while sz > 5 and f.get_string_size(s, HORIZONTAL_ALIGNMENT_LEFT, -1, sz).x > max_width:
+		sz -= 1
+	return sz
+
+
+## Text with an outline, aligned around x: "left", "center" or "right".
+## With max_width it shrinks to fit, so it never runs into its neighbours.
+static func text(ci: CanvasItem, pos: Vector2, s: String, size: int, color: Color, align := "left", outline := 0, font: Font = null, max_width := 0.0) -> void:
+	var f := font if font != null else bold_font()
+	if max_width > 0.0:
+		size = fit_size(s, size, max_width, f)
 	var h := HORIZONTAL_ALIGNMENT_LEFT
 	var x := pos.x
 	var width := -1.0

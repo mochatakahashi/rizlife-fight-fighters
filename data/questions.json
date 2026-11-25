@@ -93,6 +93,34 @@
       "source": ""
     },
     {
+      "id": "calamba-003", "stage": "calamba",
+      "question": "Which of Rizal's family secretly funded his trip to Spain in 1882?",
+      "choices": ["His brother Paciano", "His mother Teodora", "His sister Saturnina", "His father Francisco"], "answer": 0,
+      "explain": "His elder brother Paciano supported the secret trip; he later became a general of the Revolution.",
+      "source": ""
+    },
+    {
+      "id": "madrid-003", "stage": "madrid",
+      "question": "Which painting by Juan Luna won a gold medal in Madrid in 1884?",
+      "choices": ["The Blood Compact", "Spoliarium", "Las Vírgenes Cristianas", "The Parisian Life"], "answer": 1,
+      "explain": "Rizal gave a famous toast honouring Luna's Spoliarium and Hidalgo's silver medal.",
+      "source": ""
+    },
+    {
+      "id": "madrid-004", "stage": "madrid",
+      "question": "What pen name did Marcelo H. del Pilar, editor of La Solidaridad, use?",
+      "choices": ["Laong Laan", "Dimasalang", "Plaridel", "Taga-ilog"], "answer": 2,
+      "explain": "Del Pilar wrote as Plaridel. Laong Laan and Dimasalang were Rizal's own pen names.",
+      "source": ""
+    },
+    {
+      "id": "berlin-003", "stage": "berlin",
+      "question": "In 1887 Rizal visited which friend, a scholar of the Philippines, in Leitmeritz?",
+      "choices": ["Fedor Jagor", "Rudolf Virchow", "Ferdinand Blumentritt", "Juan Luna"], "answer": 2,
+      "explain": "Blumentritt was Rizal's closest friend; Rizal's last letter was written to him.",
+      "source": ""
+    },
+    {
       "id": "general-002", "stage": "general",
       "question": "In what year was Rizal executed at Bagumbayan?",
       "choices": ["1892", "1896", "1898", "1901"], "answer": 1,

@@ -1,0 +1,47 @@
+{
+  "id": "teodora",
+  "name": "Teodora Alonso",
+  "short_name": "Teodora",
+  "health": 950,
+  "walk_speed": 1.8,
+  "back_speed": 1.6,
+  "jump_velocity": 7.2,
+  "jump_speed_x": 2.3,
+  "look": "teodora",
+  "style_order": ["mother"],
+  "normals": {},
+  "styles": {
+    "mother": {
+      "label": "First Teacher",
+      "look": "teodora",
+      "blurb": "Teaches by example: the moth that flew too close to the lamp.",
+      "gauge_name": "Patience",
+      "gauge_color": "#e9c46a",
+      "damage_mult": 0.95,
+      "specials": [
+        {
+          "id": "moth_story", "name": "The Moth's Story", "motion": "qcf", "buttons": ["lp", "hp"],
+          "startup": 12, "active": 1, "recovery": 24, "damage": 60, "hitstun": 18, "blockstun": 12,
+          "projectile": {"speed": 3.0, "size": [14, 12], "offset": [24, -52], "color": "#e8d8b0", "shape": "moth", "wobble": 6.0, "life": 160},
+          "heavy": {"projectile": {"speed": 4.2}}
+        },
+        {
+          "id": "first_lesson", "name": "First Lesson", "motion": "qcb", "buttons": ["lp", "hp"], "prop": "book",
+          "startup": 2, "active": 0, "recovery": 26, "counter_window": [2, 20],
+          "counter_hit": {"name": "First Lesson", "damage": 120, "knockdown": true, "launch": 4.0, "kind": "special"}
+        },
+        {
+          "id": "firm_hand", "name": "Firm Hand", "motion": "dp", "buttons": ["lp", "hp"],
+          "startup": 5, "active": 8, "recovery": 26, "invuln": [0, 7], "damage": 95, "knockdown": true, "launch": 5.0,
+          "hitbox": [4, -94, 28, 66]
+        },
+        {
+          "id": "mothers_lamp", "name": "Mother's Lamp", "kind": "super", "motion": "qcf2", "buttons": ["lp+hp"], "prop": "book", "anim": "cast",
+          "gauge_cost": 100, "startup": 8, "active": 1, "recovery": 36, "invuln": [0, 12],
+          "damage": 280, "hitstun": 30, "knockdown": true, "launch": 6.0, "hitstop": 12,
+          "projectile": {"speed": 3.2, "size": [30, 30], "offset": [28, -44], "color": "#ffd166", "shape": "lamp", "life": 130}
+        }
+      ]
+    }
+  }
+}

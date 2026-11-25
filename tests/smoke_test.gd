@@ -22,6 +22,7 @@ func _ready() -> void:
 	_test_counter()
 	_test_styles_and_super()
 	_test_new_fighters()
+	_test_life_fighters()
 	_test_full_match()
 	_test_cpu_soak()
 	_test_leaderboard()
@@ -125,7 +126,7 @@ func _test_motions() -> void:
 
 func _test_data() -> void:
 	print("Data files")
-	check(Game.roster.size() == 5, "roster lists the 5 fighters")
+	check(Game.roster.size() == 10, "roster lists the 10 fighters")
 	check(Game.stages.size() == 6, "6 stages")
 	var stage_ids: Array = Game.stages.map(func(s): return str(s["id"]))
 	for id in _fighter_ids():
@@ -282,6 +283,35 @@ func _test_new_fighters() -> void:
 	var grew := not fight.projectiles.is_empty() and fight.projectiles[0].size.y > start_size
 	check(rang and grew, "Convent Bell: the shockwave grows as it spreads")
 	fight.queue_free()
+
+
+## Teodora, Paciano, Blumentritt, del Pilar and Luna: each one's QCF special comes out, and
+## a short CPU-vs-CPU bout with each stays sane.
+func _test_life_fighters() -> void:
+	print("People from Rizal's life")
+	for id in ["teodora", "paciano", "blumentritt", "del_pilar", "juan_luna"]:
+		var d := Game.fighter_data(id)
+		var style_id := str((d.get("style_order", []) as Array)[0])
+		var special: Dictionary = {}
+		for m in d["styles"][style_id]["specials"]:
+			if str(m.get("motion", "")) == "qcf":
+				special = m
+				break
+		var s1 := ScriptedInput.new()
+		var fight := _make_fight(_player(id, style_id, "Ana"), _rizal("writer", "Ben"), s1, ScriptedInput.new())
+		var me := fight.fighters[0]
+		s1.add(ScriptedInput.qcf(1, str(special["buttons"][0])))
+		var fired := _run(fight, 20, func(): return str(me.move.get("id", "")) == str(special.get("id", "")))
+		check(fired, "%s: QCF + %s does %s" % [id, Hud.BUTTON_TEXT.get(str(special["buttons"][0]), "?"), special.get("name")])
+		fight.queue_free()
+		var bout := _make_fight({"fighter": id, "style": style_id, "name": "CPU", "cpu": true}, {"fighter": "ibarra", "style": "ibarra", "name": "CPU", "cpu": true}, CpuInput.new(), CpuInput.new())
+		var sane := true
+		for i in 1500:
+			bout.step()
+			for f in bout.fighters:
+				sane = sane and f.position.x >= Fight.LEFT_WALL and f.position.x <= Fight.RIGHT_WALL and f.health >= 0.0
+		check(sane, "%s holds up in a CPU bout" % id)
+		bout.queue_free()
 
 
 func _test_full_match() -> void:

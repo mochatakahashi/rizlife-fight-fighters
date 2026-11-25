@@ -693,6 +693,12 @@ static func _waist(pt: Painter, lk: Dictionary, body: Frame, wd: float) -> void:
 			pt.line(body.at(-wh / 2.0, 2.2), body.at(wh / 2.0, 2.2), Color("e63946"), 0.8)
 		"bodice":
 			pt.line(body.at(-wh * 0.42, 0.8), body.at(wh * 0.42, 0.8), _col(lk, "bodice", "#3e5a7a").darkened(0.35), 1.2)
+		"camisa":
+			if lk.has("sash"):
+				# A sash tied at the waist, ends hanging at the hip.
+				var sash := _col(lk, "sash", "#b3202e")
+				pt.poly(body.pts([-wh / 2.0 - 1.2, -2.5, wh / 2.0 + 1.8, -2.5, wh / 2.0 + 1.8, 1.0, -wh / 2.0 - 1.2, 1.0]), sash)
+				pt.poly(body.pts([-wh / 2.0 - 1.0, -1.0, -wh / 2.0 + 1.5, -1.0, -wh / 2.0 + 0.5, -9.0, -wh / 2.0 - 2.5, -8.0]), sash.darkened(0.1))
 
 
 static func _head_parts(pt: Painter, lk: Dictionary, hd: Frame, neck_base: Vector2) -> void:
@@ -758,11 +764,20 @@ static func _head_parts(pt: Painter, lk: Dictionary, hd: Frame, neck_base: Vecto
 			for q in [[3.8, -5.1], [2.0, -5.6], [0.2, -5.5], [-1.6, -4.9], [4.7, -4.2], [-2.8, -3.8]]:
 				pt.dot(hd.at(q[0], q[1]), 0.75, fh)
 			pt.line(hd.at(2.6, -2.4), hd.at(5.0, -2.2), fh, 0.6)
+		"beard":
+			pt.dpoly(hd.pts([-3.2, -1.6, -1.0, -1.2, 2.4, -2.2, 5.4, -1.8, 5.0, -4.4, 3.0, -7.4, -0.6, -7.6, -3.0, -5.0]), fh)
+			pt.line(hd.at(3.0, -3.8), hd.at(4.4, -3.6), _col(lk, "skin", "#e0b48a").darkened(0.35), 0.8)
 	match str(lk.get("eyewear", "")):
 		"blue_glasses":
 			pt.dot(hd.at(3.0, 0.9), 2.0, Color(0.3, 0.5, 0.95, 0.85))
 			pt.dot(hd.at(3.6, 1.6), 0.5, Color(1, 1, 1, 0.8))
 			pt.line(hd.at(1.0, 1.2), hd.at(-1.6, 1.5), Color("202028"), 0.7)
+		"spectacles":
+			var rim := Color("2a2a30")
+			pt.dot(hd.at(3.0, 0.9), 1.9, rim)
+			pt.dot(hd.at(3.0, 0.9), 1.5, Color(0.85, 0.92, 1.0, 0.45))
+			pt.dot(hd.at(3.5, 1.4), 0.4, Color(1, 1, 1, 0.9))
+			pt.line(hd.at(1.1, 1.2), hd.at(-1.6, 1.6), rim, 0.6)
 		"blue_goggles":
 			# Simoun's "enormous blue goggles".
 			pt.dot(hd.at(3.0, 0.9), 2.9, Color("202028"))
@@ -832,3 +847,16 @@ static func _prop(pt: Painter, lk: Dictionary, j: PackedVector2Array, prop: Stri
 			pt.poly(PackedVector2Array([tip + n * 2.0, tip - n * 2.0, tip - n * 2.8 + d * 10.0, tip + n * 2.8 + d * 10.0]), wood.lightened(0.15))
 		"scalpel":
 			pt.limb(hand, hand + d * 5.0, Color("d8dde6"), 0.9)
+		"bolo":
+			# Paciano's bolo: a wooden handle and a broad, slightly curved blade.
+			var n := Vector2(-d.y, d.x)
+			pt.limb(hand - d * 2.5, hand + d * 1.0, Color("5a3a1a"), 1.8)
+			pt.poly(PackedVector2Array([hand + d * 1.0 + n * 1.1, hand + d * 1.0 - n * 1.1, hand + d * 12.0 - n * 2.4, hand + d * 15.0 + n * 0.4]), Color("cfd6de"))
+		"brush":
+			# Juan Luna's paintbrush, its tip loaded with red paint.
+			pt.limb(hand - d * 3.0, hand + d * 10.0, Color("8a5a30"), 1.0)
+			pt.dot(hand + d * 11.0, 1.4, Color("c0392b"))
+		"palette":
+			pt.poly(PackedVector2Array([hand + Vector2(-4.5, -2.0), hand + Vector2(3.5, -3.5), hand + Vector2(5.0, 1.5), hand + Vector2(-3.0, 3.5)]), Color("c8a070"))
+			for q in [[Vector2(-2.0, -1.0), "e63946"], [Vector2(1.0, -1.8), "2ec4b6"], [Vector2(2.6, 0.8), "f4b400"]]:
+				pt.dot(hand + q[0], 0.9, Color(str(q[1])))

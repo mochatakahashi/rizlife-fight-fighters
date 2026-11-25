@@ -108,18 +108,23 @@ func _draw() -> void:
 	# Header with the answering player's fighter.
 	Gfx.panel(self, Rect2(40, 10, 30, 30), Palette.PANEL, Palette.PLAYER[answerer], 6, 4)
 	CharacterArt.draw_head(self, CharacterArt.look(str(fighter.get("look", "rizal_writer"))), Vector2(55, 25), 1.1)
-	Gfx.text(self, Vector2(78, 24), "THE RIZAL QUESTION", 15, Palette.GOLD, "left", 3)
-	Gfx.text(self, Vector2(78, 36), "%s answers   ·   Topic: %s" % [who, str(stage.get("topic", "Rizal's life and works"))], 8, Palette.MUTED, "left", 0, regular)
+	Gfx.text(self, Vector2(78, 24), "THE RIZAL QUESTION", 15, Palette.GOLD, "left", 3, null, 300.0)
+	Gfx.text(self, Vector2(78, 37), "%s answers   ·   Topic: %s" % [who, str(stage.get("topic", "Rizal's life and works"))], 8, Palette.MUTED, "left", 0, regular, 360.0)
 	# Time left.
 	var left := clampf(float(frames_left) / total_frames, 0.0, 1.0)
 	var bar := Rect2(40, 46, 400, 5)
 	Gfx.panel(self, bar, Color(0, 0, 0, 0.5), Color(0, 0, 0, 0), 2, 0)
 	var tc := Palette.TEAL if left > 0.3 else Palette.RED
 	Gfx.hgradient(self, Rect2(bar.position, Vector2(bar.size.x * left, bar.size.y)), tc.darkened(0.2), tc.lightened(0.2))
-	Gfx.text(self, Vector2(440, 44), "%d s" % ceili(frames_left / 60.0), 8, tc, "right", 2)
-	# The question.
+	Gfx.text(self, Vector2(440, 30), "%d s" % ceili(frames_left / 60.0), 11, tc, "right", 2)
+	# The question, shrunk until it fits its panel.
 	Gfx.panel(self, Rect2(40, 58, 400, 56), Color(Palette.PANEL, 0.95), Color(1, 1, 1, 0.12), 10, 8)
-	draw_multiline_string(Gfx.bold_font(), Vector2(54, 78), str(question.get("question", "")), HORIZONTAL_ALIGNMENT_LEFT, 372, 11, 3, Palette.TEXT)
+	var q_text := str(question.get("question", ""))
+	var bold := Gfx.bold_font()
+	var qs := 11
+	while qs > 7 and bold.get_multiline_string_size(q_text, HORIZONTAL_ALIGNMENT_LEFT, 372, qs).y > 46.0:
+		qs -= 1
+	draw_multiline_string(bold, Vector2(54, 64 + bold.get_ascent(qs)), q_text, HORIZONTAL_ALIGNMENT_LEFT, 372, qs, -1, Palette.TEXT)
 	# Choices.
 	var choices: Array = question.get("choices", [])
 	var answer := int(question.get("answer", -1))
@@ -141,7 +146,7 @@ func _draw() -> void:
 		Gfx.panel(self, r, fill, border, 10, 3)
 		Gfx.panel(self, Rect2(r.position.x + 5, r.position.y + 4, 14, 14), Palette.BG, Color(1, 1, 1, 0.2), 7, 0)
 		Gfx.text(self, Vector2(r.position.x + 12, r.position.y + 14.5), LETTERS[k], 8, Palette.GOLD, "center")
-		draw_string(regular, Vector2(r.position.x + 26, r.position.y + 15), str(choices[idx]), HORIZONTAL_ALIGNMENT_LEFT, r.size.x - 34, 10, Palette.TEXT)
+		Gfx.text(self, Vector2(r.position.x + 26, r.position.y + 15), str(choices[idx]), 10, Palette.TEXT, "left", 0, regular, r.size.x - 34)
 	if not answered:
 		Gfx.text(self, Vector2(240, 264), "Click an answer   ·   or Up/Down and X (LP)", 7, Palette.MUTED, "center", 0, regular)
 		return
