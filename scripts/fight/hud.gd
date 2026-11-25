@@ -218,7 +218,10 @@ func _draw_pause(i: int) -> void:
 	Gfx.text(self, Vector2(240, 55), "%s  ·  %s style" % [f.short_name, str(f.style_data().get("label", ""))], 9, Palette.MUTED, "center", 0, ThemeDB.fallback_font)
 	var y := 74.0
 	for m in f.style_data().get("specials", []):
-		Gfx.text(self, Vector2(84, y), str(m.get("name", "")), 9, Palette.TEXT, "left", 0, ThemeDB.fallback_font)
+		var move_name := str(m.get("name", ""))
+		if m.has("assist"):
+			move_name = "%s  -  %s" % [str(CharacterArt.look(str(m["assist"])).get("name", "")), move_name]
+		Gfx.text(self, Vector2(84, y), move_name, 9, Palette.TEXT, "left", 0, ThemeDB.fallback_font)
 		Gfx.text(self, Vector2(396, y), notation(m), 9, Palette.TEAL, "right")
 		y += 13.0
 	Gfx.text(self, Vector2(240, 214), "X = light punch   Y = heavy punch   A = light kick   B = heavy kick   LB = style", 7, Palette.MUTED, "center", 0, ThemeDB.fallback_font)

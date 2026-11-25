@@ -3,7 +3,7 @@ extends Node
 ##     godot --path . res://tools/screenshots.tscn -- --out=C:/some/folder
 ## Without --out the images go to user://screenshots. Uses a throwaway leaderboard file.
 
-const GALLERY := ["rizal_writer", "rizal_lovers", "ibarra", "simoun", "elias", "maria_clara", "padre_damaso", "padre_salvi",
+const GALLERY := ["rizal_writer", "rizal_lovers", "ibarra", "simoun", "elias", "maria_clara", "padre_damaso", "padre_salvi", "sisa",
 	"segunda", "valenzuela", "rivera", "consuelo", "seiko", "beckett", "nelly", "suzanne", "josephine"]
 
 var out_dir := "user://screenshots"
@@ -34,6 +34,7 @@ func _ready() -> void:
 	await _shot("res://scenes/select.tscn", "04_stage", func(n): n.choosing_stage = true)
 	await _shot("res://scenes/fight.tscn", "05_fight", _setup_fight.bind("writer", "madrid"), _play_quill)
 	await _shot("res://scenes/fight.tscn", "06_lovers_assist", _setup_fight.bind("lovers", "paris"), _play_assist)
+	await _shot("res://scenes/fight.tscn", "06b_new_fighters", _setup_pair.bind("maria_clara", "devotion", "padre_damaso", "friar", "calamba"), _play_sermon)
 	await _shot("res://scenes/fight.tscn", "07_pause", _setup_fight.bind("writer", "berlin"), func(f): f.step(); f.paused_by = 0)
 	await _shot("res://scenes/quiz.tscn", "08_quiz")
 	await _shot("res://scenes/leaderboard.tscn", "09_leaderboard")
@@ -92,6 +93,26 @@ func _setup_fight(f: Fight, style: String, stage_id: String) -> void:
 	f.config = {"players": players, "stage": stage_id, "sources": [ScriptedInput.new(), ScriptedInput.new()]}
 	f.auto_run = false
 	f.auto_advance = false
+
+
+func _setup_pair(f: Fight, a: String, a_style: String, b: String, b_style: String, stage_id: String) -> void:
+	var players := [
+		{"name": "Ana", "fighter": a, "style": a_style, "cpu": false},
+		{"name": "Ben", "fighter": b, "style": b_style, "cpu": false},
+	]
+	f.config = {"players": players, "stage": stage_id, "sources": [ScriptedInput.new(), ScriptedInput.new()]}
+	f.auto_run = false
+	f.auto_advance = false
+
+
+## Padre Dámaso preaches his Hell Sermon at María Clara.
+func _play_sermon(f: Fight) -> void:
+	_stage_moment(f)
+	f.fighters[1].gauge = Fighter.GAUGE_MAX
+	var qcb := ScriptedInput.hold(0, 1, 2) + ScriptedInput.hold(-1, 1, 2) + ScriptedInput.hold(-1, 0, 2)
+	(f.config["sources"][1] as ScriptedInput).add(qcb + ScriptedInput.hold(0, 1, 2) + ScriptedInput.hold(-1, 1, 2) + ScriptedInput.hold(-1, 0, 1, {"lp": true, "hp": true}))
+	for i in 62:
+		f.step()
 
 
 func _stage_moment(f: Fight) -> void:

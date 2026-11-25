@@ -21,6 +21,7 @@ func _ready() -> void:
 	_test_hit_and_block()
 	_test_counter()
 	_test_styles_and_super()
+	_test_new_fighters()
 	_test_full_match()
 	_test_cpu_soak()
 	_test_leaderboard()
@@ -54,6 +55,14 @@ func _make_fight(p1: Dictionary, p2: Dictionary, s1: InputSource, s2: InputSourc
 	for i in Fight.INTRO_FRAMES + 1:
 		fight.step()
 	return fight
+
+
+func _fighter_ids() -> Array:
+	return Game.roster.map(func(e): return str(e["id"]))
+
+
+func _player(id: String, style: String, player_name: String) -> Dictionary:
+	return {"fighter": id, "style": style, "name": player_name, "cpu": false}
 
 
 func _rizal(style := "writer", player_name := "Ana") -> Dictionary:
@@ -119,7 +128,7 @@ func _test_data() -> void:
 	check(Game.roster.size() == 5, "roster lists the 5 fighters")
 	check(Game.stages.size() == 6, "6 stages")
 	var stage_ids: Array = Game.stages.map(func(s): return str(s["id"]))
-	for id in ["rizal", "ibarra"]:
+	for id in _fighter_ids():
 		var d := Game.fighter_data(id)
 		check(not d.is_empty() and Game.is_playable(id), "%s loads and is playable" % id)
 		check((d.get("normals", {}) as Dictionary).size() == 12, "%s has 12 normals" % id)
@@ -129,6 +138,17 @@ func _test_data() -> void:
 				var known := InputBuffer.MOTIONS.has(motion) or InputBuffer.CHARGES.has(motion) or motion == "360"
 				check(known and not (m.get("buttons", []) as Array).is_empty(), "%s/%s: motion '%s' and buttons are valid" % [id, m.get("id"), motion])
 	check(Game.selectable_styles("ibarra") == ["ibarra"], "Simoun isn't pickable on the select screen")
+	for entry in Game.roster:
+		check(CharacterArt.has_look(str(entry.get("look", ""))), "%s has a costume" % entry.get("id"))
+	for id in _fighter_ids():
+		var styles: Dictionary = Game.fighter_data(id)["styles"]
+		for style_id in styles:
+			var st: Dictionary = styles[style_id]
+			check(CharacterArt.has_look(str(st.get("look", id))), "%s style %s has a costume" % [id, style_id])
+			for m in st.get("specials", []):
+				if m.has("assist"):
+					var lk := CharacterArt.look(str(m["assist"]))
+					check(not lk.is_empty() and str(lk.get("name", "")) != "", "%s is drawn as %s" % [m.get("id"), lk.get("name", "?")])
 	var problems := QuestionBank.validate(stage_ids)
 	check(problems.is_empty(), "questions.json is valid " + str(problems))
 	check(str(QuestionBank.pick("berlin").get("stage", "")) == "berlin", "a Berlin match asks a Berlin question")
@@ -223,6 +243,44 @@ func _test_styles_and_super() -> void:
 	var fired := _run(fight, 20, func(): return fight.super_flash > 0)
 	check(fired and str(p1.move.get("id", "")) == "josephine", "double QCF + X+Y with a full gauge: Last Vow super")
 	check(p1.gauge == 0.0, "the super spends the gauge")
+	fight.queue_free()
+
+
+func _test_new_fighters() -> void:
+	print("Elias, María Clara, Padre Dámaso")
+	for id in ["elias", "maria_clara", "padre_damaso"]:
+		check(Game.is_playable(id), "%s is playable" % id)
+	# Padre Dámaso: a full circle + X is a command grab (it ends in the pre-jump frames).
+	var s1 := ScriptedInput.new()
+	var fight := _make_fight(_player("padre_damaso", "friar", "Ana"), _rizal("writer", "Ben"), s1, ScriptedInput.new())
+	var p2 := fight.fighters[1]
+	_place(fight, 220.0, 250.0)
+	for step in [[1, 0], [1, 1], [0, 1], [-1, 1], [-1, 0], [-1, -1]]:
+		s1.add(ScriptedInput.hold(step[0], step[1], 1))
+	s1.add(ScriptedInput.hold(0, -1, 1, {"lp": true}))
+	var grabbed := _run(fight, 30, func(): return p2.state == Fighter.State.KNOCKDOWN)
+	check(grabbed and not fight.fighters[0].airborne, "360 + X: Sermon Slam grabs (health %d)" % int(p2.health))
+	fight.queue_free()
+	# Elias: Sacrifice costs some of his own health.
+	s1 = ScriptedInput.new()
+	fight = _make_fight(_player("elias", "boatman", "Ana"), _rizal("writer", "Ben"), s1, ScriptedInput.new())
+	var elias := fight.fighters[0]
+	elias.gauge = Fighter.GAUGE_MAX
+	var qcf := ScriptedInput.hold(0, 1, 2) + ScriptedInput.hold(1, 1, 2) + ScriptedInput.hold(1, 0, 2)
+	s1.add(qcf + ScriptedInput.hold(0, 1, 2) + ScriptedInput.hold(1, 1, 2) + ScriptedInput.hold(1, 0, 1, {"lp": true, "hp": true}))
+	var fired := _run(fight, 20, func(): return str(elias.move.get("id", "")) == "sacrifice")
+	check(fired and elias.health == elias.max_health - 100.0, "Elias's Sacrifice super costs him 100 health")
+	fight.queue_free()
+	# María Clara: the Convent Bell shockwave grows as it travels.
+	s1 = ScriptedInput.new()
+	fight = _make_fight(_player("maria_clara", "devotion", "Ana"), _rizal("writer", "Ben"), s1, ScriptedInput.new())
+	fight.fighters[0].gauge = Fighter.GAUGE_MAX
+	s1.add(qcf + ScriptedInput.hold(0, 1, 2) + ScriptedInput.hold(1, 1, 2) + ScriptedInput.hold(1, 0, 1, {"lp": true, "hp": true}))
+	var rang := _run(fight, 60, func(): return fight.projectiles.size() > 0)
+	var start_size := fight.projectiles[0].size.y if rang else 0.0
+	_run(fight, 20)
+	var grew := not fight.projectiles.is_empty() and fight.projectiles[0].size.y > start_size
+	check(rang and grew, "Convent Bell: the shockwave grows as it spreads")
 	fight.queue_free()
 
 

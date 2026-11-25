@@ -1,0 +1,41 @@
+{
+  "id": "maria_clara",
+  "name": "María Clara",
+  "short_name": "María Clara",
+  "health": 950,
+  "walk_speed": 1.9,
+  "back_speed": 1.7,
+  "jump_velocity": 7.4,
+  "jump_speed_x": 2.4,
+  "look": "maria_clara",
+  "style_order": ["devotion"],
+  "normals": {},
+  "styles": {
+    "devotion": {
+      "label": "Devotion",
+      "look": "maria_clara",
+      "blurb": "Waits, blocks and punishes. Her veil turns an attack back on the attacker.",
+      "gauge_name": "Devotion",
+      "gauge_color": "#b388ff",
+      "damage_mult": 0.95,
+      "specials": [
+        {
+          "id": "veil_counter", "name": "Veil Counter", "motion": "qcb", "buttons": ["lp", "hp"], "prop": "fan",
+          "startup": 2, "active": 0, "recovery": 24, "counter_window": [2, 22],
+          "counter_hit": {"name": "Veil Counter", "damage": 130, "knockdown": true, "launch": 4.5, "kind": "special"}
+        },
+        {
+          "id": "locket_throw", "name": "Locket Throw", "motion": "qcf", "buttons": ["lp"],
+          "startup": 11, "active": 1, "recovery": 22, "damage": 60, "hitstun": 18, "blockstun": 12,
+          "projectile": {"speed": 4.2, "vy": -0.6, "gravity": 0.01, "size": [10, 10], "offset": [24, -50], "color": "#e9c46a", "shape": "locket", "life": 150}
+        },
+        {
+          "id": "convent_bell", "name": "Convent Bell", "kind": "super", "motion": "qcf2", "buttons": ["lp+hp"], "anim": "cast",
+          "gauge_cost": 100, "startup": 8, "active": 1, "recovery": 36, "invuln": [0, 12],
+          "damage": 280, "hitstun": 30, "knockdown": true, "launch": 6.0, "hitstop": 12,
+          "projectile": {"speed": 3.0, "size": [20, 60], "grow": [0.5, 0.25], "offset": [22, -36], "color": "#f4e1a6", "shape": "wave", "life": 80}
+        }
+      ]
+    }
+  }
+}

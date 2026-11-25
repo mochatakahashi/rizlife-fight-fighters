@@ -404,7 +404,11 @@ func on_move_started(f: Fighter, m: Dictionary) -> void:
 	last_event = {"text": str(m.get("name", "")).to_upper() + "!", "sub": Hud.notation(m),
 		"player": f.player_index, "frames": 60, "super": is_super}
 	if m.has("assist"):
-		fx.spawn("summon", f.position + Vector2(14.0 * f.facing, -40.0), Color(1.0, 0.55, 0.72))
+		# One of Rizal's loves steps in: show who she is, then the move.
+		var lk := CharacterArt.look(str(m["assist"]))
+		last_event["text"] = str(lk.get("name", m["assist"])).to_upper() + "!"
+		last_event["sub"] = "%s   ·   %s" % [str(m.get("name", "")), Hud.notation(m)]
+		fx.spawn("summon", f.position + Vector2(0.0, -40.0), Color(1.0, 0.55, 0.72))
 	if is_super:
 		hitstop = 32
 		super_flash = 32

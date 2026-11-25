@@ -1,6 +1,9 @@
 # Art
 
-The game draws placeholder blocks until real art is here. Art drops in without code changes.
+Characters are drawn in code from their costumes in `data/looks.json`, and stages are drawn from
+`data/stages.json`. Hand-drawn art in this folder replaces them automatically, with no code changes.
+The game is laid out on a 480×270 grid and scaled up to the window, so sprites drawn at that
+size are shown with crisp pixels.
 
 ## Fighters: `art/fighters/<id>/frames.tres`
 

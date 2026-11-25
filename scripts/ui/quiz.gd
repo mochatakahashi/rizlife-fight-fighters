@@ -1,6 +1,10 @@
 extends Control
-## The Rizal question. The loser of the match answers with their own controls
-## (up/down to choose, LP / X to answer). Against the CPU, the human always answers.
+## The Rizal question. The loser of the match answers: click an answer, or use their own
+## controls (up/down to choose, LP / X to answer). Against the CPU, the human always answers.
+
+const CHOICE_Y := 122.0
+const CHOICE_H := 22.0
+const LETTERS := ["A", "B", "C", "D", "E", "F"]
 
 var question: Dictionary = {}
 var answerer := 1
@@ -10,13 +14,15 @@ var answered := false
 var correct := false
 var frames_left := 0
 var total_frames := 1
-var font: Font
 var _player: Dictionary = {}
+var _t := 0.0
+var _hl_y := CHOICE_Y
+var _reveal := 0.0
+var _mouse := Vector2(-100, -100)
 
 
 func _ready() -> void:
 	theme = UiKit.theme()
-	font = ThemeDB.fallback_font
 	answerer = clampi(int(Game.last_match.get("loser", 1)), 0, 1)
 	if bool(Game.players[answerer].get("cpu", false)):
 		answerer = 1 - answerer
@@ -47,7 +53,31 @@ func _physics_process(_delta: float) -> void:
 			_answer(-1)
 	elif _pressed("lp"):
 		Game.goto("leaderboard")
+
+
+func _process(delta: float) -> void:
+	_t += delta
+	_hl_y = lerpf(_hl_y, _choice_rect(selected).position.y, 1.0 - exp(-delta * 18.0))
+	if answered:
+		_reveal = move_toward(_reveal, 1.0, delta * 3.0)
 	queue_redraw()
+
+
+func _gui_input(event: InputEvent) -> void:
+	if event is InputEventMouseMotion:
+		_mouse = event.position
+		if not answered:
+			for k in order.size():
+				if _choice_rect(k).has_point(_mouse):
+					selected = k
+	elif event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		if answered:
+			Game.goto("leaderboard")
+			return
+		for k in order.size():
+			if _choice_rect(k).has_point(event.position):
+				selected = k
+				_answer(k)
 
 
 func _pressed(action: String) -> bool:
@@ -55,47 +85,71 @@ func _pressed(action: String) -> bool:
 
 
 func _answer(i: int) -> void:
+	if answered:
+		return
 	answered = true
 	correct = i >= 0 and int(order[i]) == int(question.get("answer", -1))
 	Leaderboard.record_quiz(_player, correct)
 	Game.last_match["quiz"] = {"name": str(_player.get("name", "")), "correct": correct}
 
 
+func _choice_rect(k: int) -> Rect2:
+	return Rect2(70, CHOICE_Y + k * (CHOICE_H + 4.0), 340, CHOICE_H)
+
+
 func _draw() -> void:
-	draw_rect(Rect2(0, 0, 480, 270), Palette.BG)
+	MenuBackdrop.paint(self, _t)
 	if question.is_empty():
 		return
+	var regular := ThemeDB.fallback_font
 	var stage := Game.stage_data(str(question.get("stage", "")))
 	var who := str(_player.get("name", "P%d" % (answerer + 1)))
-	_center(24, "THE RIZAL QUESTION", 16, Palette.GOLD)
-	_center(37, "%s answers   ·   Topic: %s" % [who, str(stage.get("topic", "Rizal's life and works"))], 8, Palette.MUTED)
+	var fighter := Game.fighter_data(str(_player.get("fighter", "rizal")))
+	# Header with the answering player's fighter.
+	Gfx.panel(self, Rect2(40, 10, 30, 30), Palette.PANEL, Palette.PLAYER[answerer], 6, 4)
+	CharacterArt.draw_head(self, CharacterArt.look(str(fighter.get("look", "rizal_writer"))), Vector2(55, 25), 1.1)
+	Gfx.text(self, Vector2(78, 24), "THE RIZAL QUESTION", 15, Palette.GOLD, "left", 3)
+	Gfx.text(self, Vector2(78, 36), "%s answers   ·   Topic: %s" % [who, str(stage.get("topic", "Rizal's life and works"))], 8, Palette.MUTED, "left", 0, regular)
 	# Time left.
-	draw_rect(Rect2(40, 44, 400, 4), Palette.PANEL)
-	draw_rect(Rect2(40, 44, 400.0 * clampf(float(frames_left) / total_frames, 0.0, 1.0), 4), Palette.TEAL)
-	draw_rect(Rect2(40, 54, 400, 58), Palette.PANEL)
-	draw_multiline_string(font, Vector2(50, 72), str(question.get("question", "")), HORIZONTAL_ALIGNMENT_LEFT, 380, 11, 3, Palette.TEXT)
+	var left := clampf(float(frames_left) / total_frames, 0.0, 1.0)
+	var bar := Rect2(40, 46, 400, 5)
+	Gfx.panel(self, bar, Color(0, 0, 0, 0.5), Color(0, 0, 0, 0), 2, 0)
+	var tc := Palette.TEAL if left > 0.3 else Palette.RED
+	Gfx.hgradient(self, Rect2(bar.position, Vector2(bar.size.x * left, bar.size.y)), tc.darkened(0.2), tc.lightened(0.2))
+	Gfx.text(self, Vector2(440, 44), "%d s" % ceili(frames_left / 60.0), 8, tc, "right", 2)
+	# The question.
+	Gfx.panel(self, Rect2(40, 58, 400, 56), Color(Palette.PANEL, 0.95), Color(1, 1, 1, 0.12), 10, 8)
+	draw_multiline_string(Gfx.bold_font(), Vector2(54, 78), str(question.get("question", "")), HORIZONTAL_ALIGNMENT_LEFT, 372, 11, 3, Palette.TEXT)
+	# Choices.
 	var choices: Array = question.get("choices", [])
 	var answer := int(question.get("answer", -1))
-	for k in order.size():
-		var r := Rect2(60, 120 + k * 24, 360, 20)
-		var idx := int(order[k])
-		var fill := Palette.PANEL
-		if answered and idx == answer:
-			fill = Palette.TEAL.darkened(0.35)
-		elif answered and k == selected and not correct:
-			fill = Palette.RED.darkened(0.35)
-		draw_rect(r, fill)
-		if k == selected and not answered:
-			draw_rect(r, Palette.GOLD, false, 1.0)
-		draw_string(font, Vector2(r.position.x + 10, r.position.y + 14), str(choices[idx]), HORIZONTAL_ALIGNMENT_LEFT, r.size.x - 20, 10, Palette.TEXT)
 	if not answered:
-		_center(262, "Up/Down: choose    X (LP): answer", 8, Palette.MUTED)
+		Gfx.glow(self, Vector2(240, _hl_y + CHOICE_H / 2.0), 120.0, Color(Palette.GOLD, 0.12))
+		Gfx.panel(self, Rect2(68, _hl_y - 2, 344, CHOICE_H + 4), Color(0, 0, 0, 0), Palette.GOLD, 11, 0, 2)
+	for k in order.size():
+		var r := _choice_rect(k)
+		var idx := int(order[k])
+		var fill := Color(Palette.PANEL, 0.95)
+		var border := Color(1, 1, 1, 0.1)
+		if answered and idx == answer:
+			fill = Palette.TEAL.darkened(0.45).lerp(Palette.TEAL.darkened(0.2), _reveal)
+			border = Palette.TEAL
+			Gfx.glow(self, r.get_center(), 140.0 * _reveal, Color(Palette.TEAL, 0.18))
+		elif answered and k == selected and not correct:
+			fill = Palette.RED.darkened(0.45)
+			border = Palette.RED
+		Gfx.panel(self, r, fill, border, 10, 3)
+		Gfx.panel(self, Rect2(r.position.x + 5, r.position.y + 4, 14, 14), Palette.BG, Color(1, 1, 1, 0.2), 7, 0)
+		Gfx.text(self, Vector2(r.position.x + 12, r.position.y + 14.5), LETTERS[k], 8, Palette.GOLD, "center")
+		draw_string(regular, Vector2(r.position.x + 26, r.position.y + 15), str(choices[idx]), HORIZONTAL_ALIGNMENT_LEFT, r.size.x - 34, 10, Palette.TEXT)
+	if not answered:
+		Gfx.text(self, Vector2(240, 264), "Click an answer   ·   or Up/Down and X (LP)", 7, Palette.MUTED, "center", 0, regular)
 		return
 	var verdict := "Correct!" if correct else ("Time's up!" if frames_left <= 0 else "Not quite.")
-	_center(222, verdict, 12, Palette.TEAL if correct else Palette.RED)
-	draw_multiline_string(font, Vector2(40, 236), str(question.get("explain", "")), HORIZONTAL_ALIGNMENT_CENTER, 400, 8, 2, Palette.TEXT)
-	_center(264, "X (LP): continue", 8, Palette.MUTED)
-
-
-func _center(y: float, text: String, size: int, c: Color) -> void:
-	draw_string(font, Vector2(0, y), text, HORIZONTAL_ALIGNMENT_CENTER, 480, size, c)
+	var vc := Palette.TEAL if correct else Palette.RED
+	var s := lerpf(1.6, 1.0, Gfx.ease_out(_reveal))
+	draw_set_transform(Vector2(240, 230), 0.0, Vector2(s, s))
+	Gfx.text(self, Vector2.ZERO, verdict, 14, Color(vc.lightened(0.2), _reveal), "center", 3)
+	draw_set_transform_matrix(Transform2D.IDENTITY)
+	draw_multiline_string(regular, Vector2(50, 243), str(question.get("explain", "")), HORIZONTAL_ALIGNMENT_CENTER, 380, 8, 2, Color(Palette.TEXT, _reveal))
+	Gfx.text(self, Vector2(240, 266), "Click or press X (LP) to continue", 7, Palette.MUTED, "center", 0, regular)

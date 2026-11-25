@@ -81,8 +81,10 @@ func _plan() -> void:
 			_tap(0, 0, "hp")
 		elif r < 0.65:
 			_tap(0, 1, "hk")
-		elif r < 0.78:
+		elif r < 0.72:
 			_queue.append_array(ScriptedInput.qcf(t, "lk"))
+		elif r < 0.78:
+			_spin(t, "lp")  # a full circle: Padre Dámaso's Sermon Slam
 		elif r < 0.9:
 			_hold(14, -t, 0)
 		else:
@@ -98,6 +100,14 @@ func _hold(n: int, x: int, y: int) -> void:
 func _tap(x: int, y: int, button: String) -> void:
 	_queue.append_array(ScriptedInput.hold(x, y, 2, {button: true}))
 	_queue.append_array(ScriptedInput.hold(x, y, 6))
+
+
+## Forward, down, back, then up with the button: a 360 that ends in the pre-jump frames.
+func _spin(t: int, button: String) -> void:
+	for step in [[t, 0], [t, 1], [0, 1], [-t, 1], [-t, 0], [-t, -1]]:
+		_queue.append_array(ScriptedInput.hold(int(step[0]), int(step[1]), 1))
+	_queue.append_array(ScriptedInput.hold(0, -1, 1, {button: true}))
+	_queue.append_array(ScriptedInput.hold(0, 0, 8))
 
 
 func _jump_in(t: int) -> void:

@@ -332,6 +332,10 @@ func _start_move(m: Dictionary) -> void:
 	if not airborne:
 		velocity.x = 0.0
 	gauge = maxf(0.0, gauge - float(m.get("gauge_cost", 0)))
+	# Elias's Sacrifice costs some of his own health (it never knocks him out).
+	var self_damage := float(m.get("self_damage", 0))
+	if self_damage > 0.0:
+		health = maxf(1.0, health - self_damage)
 	_set_state(State.ATTACK)
 	if str(m.get("kind", "normal")) != "normal" and fight:
 		fight.on_move_started(self, m)
@@ -536,7 +540,8 @@ func hud_name() -> String:
 	var label := str(style_data().get("label", ""))
 	if (data.get("style_order", []) as Array).size() > 1:
 		return "%s (%s)" % [short_name, label]
-	return label if label != "" else short_name
+	# A transformed form (Simoun) shows its own name; otherwise the fighter's.
+	return label if style_data().has("revert_to") and label != "" else short_name
 
 
 func damage_mult() -> float:
@@ -671,27 +676,33 @@ func _draw_character() -> void:
 	if state == State.STYLE_SWITCH or _is_countering():
 		var pulse := 0.5 + 0.5 * sin(anim_t * 0.4)
 		Gfx.glow(self, Vector2(0, -36), 46.0, Color(accent, 0.35 + 0.25 * pulse))
-	var assist := state == State.ATTACK and move.has("assist")
-	var behind := assist and _attack_anim() == "cast"
-	if assist and behind:
-		_draw_assist(-18.0)
 	var flash := flash_frames > 0 and flash_frames % 2 == 0
-	var prop := str(move.get("prop", "")) if state == State.ATTACK and not assist else ""
-	CharacterArt.draw(self, look(), _pose(), facing, Vector2.ZERO, {"flash": flash, "prop": prop})
-	if assist and not behind:
-		_draw_assist(14.0)
+	var swap := assist_fade()
+	if swap < 1.0:
+		var prop := str(move.get("prop", "")) if state == State.ATTACK and swap <= 0.0 else ""
+		CharacterArt.draw(self, look(), _pose(), facing, Vector2.ZERO, {"flash": flash, "prop": prop, "alpha": 1.0 - swap})
+	if swap > 0.0:
+		_draw_assist(swap, flash)
 
 
-## Rizal's Lovers specials: the love the move is named after appears beside him and does the attack.
-func _draw_assist(offset: float) -> void:
+## 0 = Rizal is fighting, 1 = one of his loves has fully taken his place for a Lovers special.
+func assist_fade() -> float:
+	if state != State.ATTACK or not move.has("assist"):
+		return 0.0
 	var total := int(move.get("startup", 5)) + int(move.get("active", 3)) + int(move.get("recovery", 10))
-	var fade := clampf(move_frame / 5.0, 0.0, 1.0) * clampf((total - move_frame) / 8.0, 0.0, 1.0)
-	if fade <= 0.0:
-		return
-	var at := Vector2(offset * facing, 0.0)
-	Gfx.glow(self, at + Vector2(0, -34), 34.0, Color(1.0, 0.55, 0.72, 0.35 * fade))
+	return clampf(move_frame / 4.0, 0.0, 1.0) * clampf((total - move_frame) / 6.0, 0.0, 1.0)
+
+
+## Rizal's Lovers specials: he steps out and the love the move belongs to fights in his place,
+## with her name over her head.
+func _draw_assist(fade: float, flash: bool) -> void:
+	var lk := CharacterArt.look(str(move["assist"]))
+	Gfx.glow(self, Vector2(0, -34), 40.0, Color(1.0, 0.55, 0.72, 0.3 * fade))
 	var ps := CharacterArt.pose(_attack_anim(), float(anim_t), attack_progress())
-	CharacterArt.draw(self, CharacterArt.look(str(move["assist"])), ps, facing, at, {"alpha": fade, "prop": str(move.get("prop", ""))})
+	CharacterArt.draw(self, lk, ps, facing, Vector2.ZERO, {"alpha": fade, "flash": flash, "prop": str(move.get("prop", ""))})
+	var nm := str(lk.get("name", move["assist"]))
+	Gfx.text(self, Vector2(0, -80), nm, 8, Color(Palette.PINK.lightened(0.3), fade), "center", 3)
+	Gfx.text(self, Vector2(0, -72), str(lk.get("from", "")), 6, Color(Palette.TEXT, 0.85 * fade), "center", 2, ThemeDB.fallback_font)
 
 
 func _pose() -> Dictionary:

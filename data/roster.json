@@ -18,20 +18,20 @@
     "look": "elias",
     "name": "Elias",
     "role": "Mobile boatman with a self-sacrifice super.",
-    "playable": false
+    "playable": true
   },
   {
     "id": "maria_clara",
     "look": "maria_clara",
     "name": "María Clara",
     "role": "Defensive counter-puncher with a bell shockwave.",
-    "playable": false
+    "playable": true
   },
   {
     "id": "padre_damaso",
     "look": "padre_damaso",
     "name": "Padre Dámaso",
     "role": "Slow, heavy grappler with huge damage.",
-    "playable": false
+    "playable": true
   }
 ]

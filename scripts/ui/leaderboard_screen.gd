@@ -1,35 +1,38 @@
 extends Control
-## This term's leaderboard, plus what just happened in the last match.
+## This term's leaderboard, plus what happened in the last match. Rows slide in one by one.
+
+const MEDALS := [Color("f4b400"), Color("c9d1dc"), Color("d08a4e")]
 
 
 func _ready() -> void:
 	theme = UiKit.theme()
 	UiKit.backdrop(self)
-	var box := UiKit.centered_column(self, 5)
-	box.add_child(UiKit.label("LEADERBOARD", 18, Palette.GOLD))
+	var box := UiKit.centered_card(self, 4)
+	box.add_child(UiKit.label("LEADERBOARD", 18, Palette.GOLD, true, 3))
 	box.add_child(UiKit.label(Leaderboard.term() + "  ·  starts fresh every term", 8, Palette.MUTED))
 	var summary := _last_match_text()
 	if summary != "":
 		box.add_child(UiKit.label(summary, 9, Palette.TEAL))
 	var rows := Leaderboard.standings()
+	var animated: Array = []
 	if rows.is_empty():
 		box.add_child(UiKit.label("No matches yet this term.", 10, Palette.TEXT))
 	else:
 		var grid := GridContainer.new()
 		grid.columns = 6
-		grid.add_theme_constant_override("h_separation", 16)
-		grid.add_theme_constant_override("v_separation", 1)
+		grid.add_theme_constant_override("h_separation", 18)
+		grid.add_theme_constant_override("v_separation", 2)
 		for header in ["#", "PLAYER", "WINS", "LOSSES", "QUIZ", "POINTS"]:
-			grid.add_child(UiKit.label(header, 8, Palette.MUTED))
+			grid.add_child(UiKit.label(header, 7, Palette.MUTED, true))
 		for k in mini(rows.size(), 10):
 			var row: Dictionary = rows[k]
-			var c := Palette.GOLD if k == 0 else Palette.TEXT
-			grid.add_child(UiKit.label(str(k + 1), 9, c))
-			grid.add_child(UiKit.label(str(row["name"]), 9, c))
-			grid.add_child(UiKit.label(str(int(row.get("wins", 0))), 9, c))
-			grid.add_child(UiKit.label(str(int(row.get("losses", 0))), 9, c))
-			grid.add_child(UiKit.label("%d/%d" % [int(row.get("quiz_correct", 0)), int(row.get("quiz_answered", 0))], 9, c))
-			grid.add_child(UiKit.label(str(int(row["points"])), 9, c))
+			var c: Color = MEDALS[k] if k < MEDALS.size() else Palette.TEXT
+			var cells := [str(k + 1), str(row["name"]), str(int(row.get("wins", 0))), str(int(row.get("losses", 0))),
+				"%d/%d" % [int(row.get("quiz_correct", 0)), int(row.get("quiz_answered", 0))], str(int(row["points"]))]
+			for cell in cells:
+				var l := UiKit.label(cell, 10 if k < 3 else 9, c, k < 3)
+				grid.add_child(l)
+				animated.append(l)
 		var center := CenterContainer.new()
 		center.add_child(grid)
 		box.add_child(center)
@@ -43,11 +46,11 @@ func _ready() -> void:
 	var menu := _add(buttons, "Main menu", Game.goto.bind("main_menu"))
 	box.add_child(buttons)
 	(first if first != null else menu).grab_focus.call_deferred()
+	UiKit.stagger_in(animated, 0.025)
 
 
 func _add(row: HBoxContainer, text: String, action: Callable) -> Button:
-	var b := UiKit.button(text, action)
-	b.custom_minimum_size = Vector2(96, 0)
+	var b := UiKit.button(text, action, 96)
 	row.add_child(b)
 	return b
 

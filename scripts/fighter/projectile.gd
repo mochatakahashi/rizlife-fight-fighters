@@ -2,7 +2,8 @@ class_name Projectile
 extends Node2D
 ## A thrown or summoned attack: quills, hearts, letters, lamp bombs, delayed hits.
 ## Its look and path come from the move's "projectile" block in the fighter's JSON.
-## shape: rect, orb, heart, quill, letter, ink, tear, lamp, pillar.
+## shape: rect, orb, heart, quill, letter, ink, tear, lamp, pillar, locket, wave.
+## "grow": [w, h] makes it (and its hitbox) grow every frame, like a spreading shockwave.
 
 const TRAIL := 7
 
@@ -19,6 +20,7 @@ var opacity := 1.0
 var shape := "rect"
 var spent := false
 var age := 0
+var grow := Vector2.ZERO
 var _trail: Array[Vector2] = []
 
 
@@ -37,6 +39,8 @@ func setup(fighter: Fighter, m: Dictionary) -> void:
 	tint = Color(str(p.get("color", "#ffffff")))
 	opacity = float(p.get("opacity", 1.0))
 	shape = str(p.get("shape", "rect"))
+	var g: Array = p.get("grow", [0, 0])
+	grow = Vector2(float(g[0]), float(g[1]))
 
 
 func tick() -> void:
@@ -47,6 +51,7 @@ func tick() -> void:
 		_trail.push_front(position)
 		if _trail.size() > TRAIL:
 			_trail.pop_back()
+		size += grow
 		position += velocity
 		velocity.y += gravity
 		life -= 1
@@ -113,6 +118,33 @@ func _draw() -> void:
 		"ink":
 			for k in 3:
 				draw_circle(Vector2(-k * 4.0 * signf(dir.x), sin(age * 0.3 + k) * 1.5), r * (1.0 - k * 0.25), c, true, -1.0, true)
+		"page":
+			# A glowing page of verse (Mi Último Adiós).
+			var w := size.x * 0.8
+			var h := size.y * 0.9
+			var tilt := sin(age * 0.15) * 0.15
+			draw_set_transform(Vector2.ZERO, tilt, Vector2.ONE)
+			draw_rect(Rect2(-w / 2.0, -h / 2.0, w, h).grow(1.0), ink)
+			draw_rect(Rect2(-w / 2.0, -h / 2.0, w, h), c)
+			for k in 7:
+				var ly := -h / 2.0 + 5.0 + k * (h - 8.0) / 7.0
+				draw_line(Vector2(-w / 2.0 + 3.0, ly), Vector2(w / 2.0 - 3.0 - (k % 3) * 3.0, ly), Color(0.25, 0.2, 0.35, 0.8 * opacity), 1.0, true)
+			draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+		"locket":
+			draw_line(Vector2(-r * 0.2, -r * 1.6), Vector2(0, -r), Color(0.95, 0.85, 0.5, opacity), 0.8, true)
+			draw_circle(Vector2.ZERO, r + 0.8, ink, true, -1.0, true)
+			draw_circle(Vector2.ZERO, r, c, true, -1.0, true)
+			draw_circle(Vector2.ZERO, r * 0.55, c.darkened(0.25), true, -1.0, true)
+			draw_circle(Vector2(-r * 0.3, -r * 0.3), r * 0.3, Color(1, 1, 1, 0.8 * opacity), true, -1.0, true)
+		"wave":
+			# A ringing shockwave: bright arcs spreading in the direction it travels.
+			var face := signf(dir.x) if absf(dir.x) > 0.01 else 1.0
+			var fade := clampf(life / 20.0, 0.0, 1.0)
+			Gfx.glow(self, Vector2.ZERO, size.y * 0.8, Color(tint, 0.35 * fade))
+			for k in 3:
+				var rr := size.y * (0.3 + k * 0.12) + fmod(age * 1.5, 6.0)
+				var start := -PI / 2.6 if face > 0.0 else PI - PI / 2.6
+				draw_arc(Vector2(-face * size.x * 0.3, 0), rr, start, start + PI / 1.3, 18, Color(tint.lightened(0.3), (0.9 - k * 0.25) * fade), 2.0 - k * 0.4, true)
 		"pillar":
 			Gfx.glow(self, Vector2.ZERO, size.y * 0.7, Color(tint, 0.5))
 			Gfx.vgradient(self, Rect2(-size.x / 2.0, -size.y / 2.0, size.x, size.y), Color(tint, 0.0), Color(tint, 0.85))

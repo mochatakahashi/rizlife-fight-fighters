@@ -1,0 +1,41 @@
+{
+  "id": "elias",
+  "name": "Elias",
+  "short_name": "Elias",
+  "health": 950,
+  "walk_speed": 2.5,
+  "back_speed": 2.0,
+  "jump_velocity": 8.0,
+  "jump_speed_x": 3.0,
+  "look": "elias",
+  "style_order": ["boatman"],
+  "normals": {},
+  "styles": {
+    "boatman": {
+      "label": "Boatman",
+      "look": "elias",
+      "blurb": "The boatman of the Noli. Fast and mobile, he fights with his oar.",
+      "gauge_name": "Tide",
+      "gauge_color": "#4cc9f0",
+      "damage_mult": 0.95,
+      "specials": [
+        {
+          "id": "oar_sweep", "name": "Oar Sweep", "motion": "qcf", "buttons": ["lk", "hk"], "prop": "oar", "anim": "swing_low",
+          "startup": 10, "active": 5, "recovery": 20, "height": "low", "damage": 85, "knockdown": true, "launch": 3.0,
+          "hitbox": [8, -18, 56, 16],
+          "heavy": {"damage": 95, "startup": 12}
+        },
+        {
+          "id": "river_dash", "name": "River Dash", "motion": "ff", "buttons": ["lk", "hk"], "prop": "oar", "anim": "lunge",
+          "startup": 4, "active": 12, "recovery": 16, "move_x": 6.5, "damage": 70, "hitstun": 20, "blockstun": 12, "cancel": true,
+          "hitbox": [6, -60, 34, 26]
+        },
+        {
+          "id": "sacrifice", "name": "Sacrifice", "kind": "super", "motion": "qcf2", "buttons": ["lp+hp"], "prop": "oar", "anim": "lunge",
+          "gauge_cost": 100, "self_damage": 100, "startup": 5, "active": 16, "recovery": 30, "invuln": [0, 20], "move_x": 6.0,
+          "damage": 380, "knockdown": true, "launch": 7.0, "hitstop": 14, "hitbox": [6, -70, 46, 66]
+        }
+      ]
+    }
+  }
+}

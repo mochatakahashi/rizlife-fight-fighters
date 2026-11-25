@@ -1,0 +1,45 @@
+{
+  "id": "padre_damaso",
+  "name": "Padre Dámaso",
+  "short_name": "Dámaso",
+  "health": 1150,
+  "walk_speed": 1.35,
+  "back_speed": 1.1,
+  "jump_velocity": 6.8,
+  "jump_speed_x": 2.0,
+  "look": "padre_damaso",
+  "style_order": ["friar"],
+  "normals": {
+    "hp": {"startup": 9},
+    "hk": {"startup": 11}
+  },
+  "styles": {
+    "friar": {
+      "label": "Friar",
+      "look": "padre_damaso",
+      "blurb": "Slow and heavy. Get close and grab: Sermon Slam is a full-circle throw.",
+      "gauge_name": "Wrath",
+      "gauge_color": "#ff8c42",
+      "damage_mult": 1.2,
+      "gauge_on_damage": 0.06,
+      "specials": [
+        {
+          "id": "sermon_slam", "name": "Sermon Slam", "motion": "360", "buttons": ["lp"], "type": "throw", "anim": "throw",
+          "startup": 3, "active": 3, "recovery": 30, "damage": 200, "knockdown": true, "launch": 5.0, "hitstop": 12,
+          "hitbox": [6, -70, 30, 62]
+        },
+        {
+          "id": "pulpit_pound", "name": "Pulpit Pound", "motion": "charge_du", "buttons": ["lk", "hk"], "anim": "slam",
+          "startup": 14, "active": 5, "recovery": 22, "height": "overhead", "move_x": 1.5,
+          "damage": 120, "knockdown": true, "launch": 3.5, "hitbox": [6, -46, 40, 46]
+        },
+        {
+          "id": "hell_sermon", "name": "Hell Sermon", "kind": "super", "motion": "qcf2", "buttons": ["lp+hp"], "prop": "book", "anim": "preach",
+          "gauge_cost": 100, "startup": 10, "active": 1, "recovery": 40, "invuln": [0, 14],
+          "damage": 320, "hitstun": 30, "knockdown": true, "launch": 7.0, "hitstop": 14,
+          "projectile": {"speed": 2.6, "size": [24, 70], "grow": [0.6, 0.3], "offset": [24, -38], "color": "#ff7b39", "shape": "wave", "life": 100}
+        }
+      ]
+    }
+  }
+}

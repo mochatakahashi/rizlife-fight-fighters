@@ -1,18 +1,21 @@
 {
-  "_about": "Costumes for the drawn characters (scripts/art/character_art.gd). A look can start from another with \"base\". \"alt\" is the second colour set used in mirror matches. top: suit / camisa / baro / habit. bottom: trousers / rolled / skirt / robe. feet: shoes / barefoot / sandals. hair_style: side_part / wavy / short / bun / tonsure / long_white.",
+  "_about": "Costumes for the drawn characters (scripts/art/character_art.gd). A look can start from another with \"base\". \"alt\" is the second colour set used in mirror matches. Parts: top suit/camisa/baro/habit/bodice/kimono, bottom trousers/rolled/skirt/robe/kimono, feet shoes/barefoot/sandals/geta, hair_style side_part/wavy/short/long/long_white/bun/updo/japanese/tonsure. \"documented\" lists details taken from the novels or sources; everything else is plausible for the period. \"fact\" is the short line shown in the game. Sources are in README (Characters and costumes).",
 
   "rizal": {
+    "name": "José Rizal",
+    "fact": "Physician, novelist and national hero, about 5'3\" tall.",
+    "documented": "Black suit; white high-collared shirt and dark tie in his portraits (Craig 1913; portraits).",
     "skin": "#e0b48a",
     "hair": "#16121c",
     "hair_style": "side_part",
     "facial_hair": "mustache",
     "top": "suit",
-    "coat": "#1f2233",
+    "coat": "#1c1e2a",
     "shirt": "#f2efe6",
     "neckwear": "bowtie",
     "neck_color": "#0b0b10",
     "bottom": "trousers",
-    "pants": "#1a1c2a",
+    "pants": "#17181f",
     "feet": "shoes",
     "shoes": "#0b0b10",
     "alt": {"coat": "#4a3828", "pants": "#3a2c20", "neck_color": "#6b2232"}
@@ -21,61 +24,77 @@
   "rizal_lovers": {"base": "rizal", "boutonniere": "#e63946"},
 
   "ibarra": {
-    "skin": "#e8c09a",
-    "hair": "#3a2418",
+    "name": "Crisóstomo Ibarra",
+    "fact": "Rich heir back from Europe; dreams of building a school in San Diego.",
+    "documented": "\"Dressed in deep mourning\", \"remarkable stature\", brown skin with Spanish blood (Noli ch. II).",
+    "skin": "#d4a47a",
+    "hair": "#2a1a12",
     "hair_style": "wavy",
     "top": "suit",
     "frock": true,
-    "coat": "#4a1f2a",
-    "vest": "#c9a55a",
+    "coat": "#121216",
+    "vest": "#2a2a30",
     "shirt": "#f4f1ea",
     "neckwear": "cravat",
     "neck_color": "#f4f1ea",
     "bottom": "trousers",
-    "pants": "#2a2226",
+    "pants": "#141418",
     "feet": "shoes",
-    "shoes": "#1a1214",
-    "alt": {"coat": "#24443e", "vest": "#9aa3ad", "pants": "#1e2a28"}
+    "shoes": "#0b0b10",
+    "height": 1.06,
+    "alt": {"coat": "#25344a", "vest": "#3a4a5e", "pants": "#1c2433"}
   },
   "simoun": {
     "base": "ibarra",
-    "skin": "#c99a6e",
+    "name": "Simoun",
+    "fact": "Ibarra 13 years later, disguised as a rich jeweller, plotting revenge.",
+    "documented": "Tall, meagre, very dark; English fashion; pith helmet; long white hair; sparse black beard; enormous blue goggles (Fili ch. I).",
+    "skin": "#9a6a44",
     "hair": "#ebe9f0",
     "hair_style": "long_white",
     "facial_hair": "beard_sparse",
     "facial_hair_color": "#151217",
-    "eyewear": "blue_glasses",
-    "coat": "#15151c",
-    "vest": "#3a2f12",
-    "neck_color": "#15151c",
+    "eyewear": "blue_goggles",
+    "headwear": "pith_helmet",
+    "hat": "#e8e2d0",
+    "coat": "#cfc6b0",
+    "vest": "#8a7a5a",
+    "neck_color": "#2a2a30",
     "watch_chain": "#d4af37",
-    "pants": "#121218",
-    "alt": {"coat": "#2a2440", "vest": "#4a3a18"}
+    "pants": "#3a3630",
+    "width": 0.88,
+    "alt": {"coat": "#9aa6b4", "vest": "#5a6470"}
   },
 
   "elias": {
+    "name": "Elias",
+    "fact": "The mysterious boatman who saves Ibarra's life, twice.",
+    "documented": "Athletic build, long unkempt black hair, dark striped shirt, steers with a wide paddle (Noli ch. XXIII).",
     "skin": "#a8703f",
     "hair": "#120e0c",
-    "hair_style": "short",
-    "headwear": "salakot",
-    "hat": "#c8a565",
+    "hair_style": "long",
     "top": "camisa",
-    "shirt": "#ece4cf",
+    "shirt": "#2c3440",
+    "shirt_stripe": "#5f7088",
     "bottom": "rolled",
-    "pants": "#2b3a55",
+    "pants": "#262629",
     "feet": "barefoot",
     "accessory": "oar_back",
-    "alt": {"shirt": "#cfd8c4", "pants": "#4a3a2a"}
+    "width": 1.05,
+    "alt": {"shirt": "#4a2c2c", "shirt_stripe": "#8a5a50", "pants": "#2c3a4a"}
   },
 
   "maria_clara": {
-    "skin": "#f0cfae",
-    "hair": "#1a1010",
+    "name": "María Clara",
+    "fact": "Capitán Tiago's daughter, Ibarra's fiancée; ends her days in a convent.",
+    "documented": "Large black eyes, skin \"white as cotton\", filmy piña, pearls and diamonds in her hair, a tapis (Noli ch. V, VI, XXXIX).",
+    "skin": "#f6e4d2",
+    "hair": "#2a1a14",
     "hair_style": "bun",
-    "comb": "#d4af37",
+    "hair_pearls": "#fbf8f0",
     "top": "baro",
-    "shirt": "#f6f1e7",
-    "panuelo": "#efe3c8",
+    "shirt": "#f8f4ea",
+    "panuelo": "#f3ead6",
     "panuelo_trim": "#d9b45a",
     "locket": "#d4af37",
     "bottom": "skirt",
@@ -86,34 +105,59 @@
     "shoes": "#3a2230",
     "accessory": "fan",
     "prop_color": "#e9c46a",
+    "lips": "#c0485e",
     "height": 0.95,
     "width": 0.9,
     "alt": {"skirt": "#2b4a7e", "skirt_stripe": "#4a72b0"}
   },
 
   "padre_damaso": {
+    "name": "Padre Dámaso",
+    "fact": "Franciscan friar and Ibarra's enemy; secretly María Clara's father.",
+    "documented": "Franciscan, hair turning gray, \"wide jaws and herculean frame\", bare feet (Noli ch. I). Brown habit is the usual depiction.",
     "skin": "#e2b08a",
-    "hair": "#9a9aa0",
+    "hair": "#8e8e96",
     "hair_style": "tonsure",
     "top": "habit",
     "robe": "#5a3e26",
     "cord": "#e8e0c8",
     "bottom": "robe",
-    "feet": "sandals",
-    "width": 1.4,
-    "belly": true,
+    "feet": "barefoot",
+    "width": 1.45,
+    "height": 1.06,
     "alt": {"robe": "#3e3a3a"}
   },
   "padre_salvi": {
     "base": "padre_damaso",
-    "skin": "#e6c3a0",
+    "name": "Padre Salvi",
+    "fact": "Dámaso's successor as curate; thin, pale and secretly scheming.",
+    "documented": "\"A young Franciscan, thin, wasted, and pale\" (Noli ch. V).",
+    "skin": "#efd9c4",
     "hair": "#3a3030",
     "robe": "#4e3a28",
-    "width": 0.9,
-    "belly": false
+    "feet": "sandals",
+    "width": 0.82,
+    "height": 1.0
+  },
+  "sisa": {
+    "name": "Sisa",
+    "fact": "Mother of Basilio and Crispín, driven mad by grief.",
+    "documented": "Clear brown skin, abundant hair without pins or combs, a pañuelo; later dishevelled (Noli ch. XVI, XXI).",
+    "skin": "#b07a4e",
+    "hair": "#1a1210",
+    "hair_style": "long",
+    "top": "baro",
+    "shirt": "#d8cfbf",
+    "panuelo": "#cfc4ae",
+    "panuelo_trim": "#a8987c",
+    "bottom": "skirt",
+    "skirt": "#5a4a3a",
+    "feet": "barefoot",
+    "height": 0.92,
+    "width": 0.88
   },
 
-  "_loves": "Rizal's nine loves, who appear as his assists in Lovers style.",
+  "_loves": "Rizal's nine loves, who fight for him in Lovers style.",
   "love_base": {
     "skin": "#f0cfae", "hair": "#1a1010", "hair_style": "updo", "lips": "#c0485e",
     "top": "bodice", "bodice": "#3e5a7a", "collar": "#f4f1ea", "brooch": "#d4af37",
@@ -121,39 +165,66 @@
     "feet": "shoes", "shoes": "#2a1a1a", "height": 0.93, "width": 0.88
   },
   "segunda": {
-    "base": "love_base", "skin": "#d9a77c", "hair_style": "bun", "comb": "#d4af37",
+    "base": "love_base", "name": "Segunda Katigbak", "from": "Lipa, Batangas",
+    "fact": "Rizal's first love (c. 1877); she was already engaged to Manuel Luz.",
+    "documented": "Short, rosy-cheeked, with an enchanting smile (Rizal's Memorias).",
+    "skin": "#d9a77c", "hair_style": "bun", "comb": "#d4af37",
     "top": "baro", "shirt": "#f8f0f4", "panuelo": "#f7d5e0", "panuelo_trim": "#e07aa0",
-    "skirt": "#c2456e", "skirt_stripe": "#e27a9a", "tapis": "#3a1a2a", "height": 0.9
+    "skirt": "#c2456e", "skirt_stripe": "#e27a9a", "tapis": "#3a1a2a", "height": 0.87
   },
   "valenzuela": {
-    "base": "love_base", "skin": "#dcae84", "hair_style": "bun", "comb": "#c0c6d0",
+    "base": "love_base", "name": "Leonor Valenzuela", "from": "Manila (his neighbour)",
+    "fact": "\"Orang\". Rizal reportedly wrote her notes in invisible ink.",
+    "documented": "Nickname Orang. The invisible-ink story and \"tall girl\" come from textbooks only.",
+    "skin": "#dcae84", "hair_style": "bun", "comb": "#c0c6d0",
     "top": "baro", "shirt": "#f3f7f4", "panuelo": "#e8f3ef", "panuelo_trim": "#4fb3a8",
-    "skirt": "#2a7d75", "skirt_stripe": "#4fb3a8", "tapis": "#16302c"
+    "skirt": "#2a7d75", "skirt_stripe": "#4fb3a8", "tapis": "#16302c", "height": 0.97
   },
   "rivera": {
-    "base": "love_base", "skin": "#e8c3a0", "hair_style": "bun", "comb": "#d4af37",
+    "base": "love_base", "name": "Leonor Rivera", "from": "Camiling, Tarlac",
+    "fact": "Signed her secret letters \"Taimis\". Often seen as María Clara's model.",
+    "documented": "High forehead, soft wavy hair, almond eyes, dimples; sang and played piano (Coates).",
+    "skin": "#e8c3a0", "hair_style": "bun", "comb": "#d4af37",
     "top": "baro", "shirt": "#fbf8f1", "panuelo": "#ffffff", "panuelo_trim": "#6f8fd0",
     "skirt": "#3b5b9a", "skirt_stripe": "#6f8fd0", "tapis": "#1c2440", "height": 0.92
   },
   "consuelo": {
-    "base": "love_base", "skin": "#ecc9a8", "hair": "#120c10", "headwear": "mantilla", "mantilla": "#141014",
-    "bodice": "#4a2050", "skirt": "#5b2b5e", "accessory": "fan", "prop_color": "#e63946"
+    "base": "love_base", "name": "Consuelo Ortiga y Pérez", "from": "Madrid, Spain",
+    "fact": "Rizal wrote her a poem in 1883, then stepped aside for his friend.",
+    "documented": "Daughter of Pablo Ortiga y Rey. Poem titled \"A la Señorita C. O. y R.\" (Craig 1913).",
+    "skin": "#ecc9a8", "hair": "#120c10", "headwear": "mantilla", "mantilla": "#141014",
+    "bodice": "#4a2050", "skirt": "#5b2b5e", "bustle": true, "accessory": "fan", "prop_color": "#e63946"
   },
   "seiko": {
-    "base": "love_base", "skin": "#f1d4b8", "hair": "#0c0a0c", "hair_style": "japanese", "pin": "#e63946",
+    "base": "love_base", "name": "O-Sei-San", "from": "Tokyo, Japan",
+    "fact": "Usui Seiko, his guide in Tokyo (1888). They talked in French.",
+    "documented": "Daughter of a former samurai. In 1888 elite women wore kimono or Western bustle gowns.",
+    "skin": "#f1d4b8", "hair": "#0c0a0c", "hair_style": "japanese", "pin": "#e63946",
     "top": "kimono", "kimono": "#c94a6a", "kimono_pattern": "#f4c2d0", "collar": "#f4f1ea", "obi": "#f4b400",
     "bottom": "kimono", "feet": "geta", "shoes": "#8a6a4a"
   },
   "beckett": {
-    "base": "love_base", "skin": "#f2d2bc", "hair": "#6b3a20", "bodice": "#3e5a7a", "skirt": "#3e5a7a", "bustle": true
+    "base": "love_base", "name": "Gertrude Beckett", "from": "London, England",
+    "fact": "\"Gettie\", his London landlord's daughter (1888). Rizal carved the sisters' heads.",
+    "documented": "Household confirmed by Craig. \"Blue-eyed and buxom\" and the carving come from textbooks.",
+    "skin": "#f2d2bc", "hair": "#6b3a20", "bodice": "#3e5a7a", "skirt": "#3e5a7a", "bustle": true
   },
   "nelly": {
-    "base": "love_base", "skin": "#ecc8a8", "hair": "#3a2418", "bodice": "#efe8dc", "skirt": "#2a2a3a"
+    "base": "love_base", "name": "Nelly Boustead", "from": "Biarritz, France",
+    "fact": "A skilled fencer who crossed foils with Rizal. He courted her in 1891.",
+    "documented": "\"Had great skill with the foils\" (Craig 1913).",
+    "skin": "#ecc8a8", "hair": "#3a2418", "bodice": "#f4f1ea", "collar": "#ffffff", "skirt": "#2a2a3a"
   },
   "suzanne": {
-    "base": "love_base", "skin": "#f4dcc8", "hair": "#d8b25a", "bodice": "#7a9a6a", "skirt": "#7a9a6a", "bustle": true
+    "base": "love_base", "name": "Suzanne Jacoby", "from": "Brussels, Belgium",
+    "fact": "Brussels, 1890: \"petite Suzanne\" wrote him longing letters.",
+    "documented": "Disputed: newer research says the Jacoby sisters ran his boarding house, and the girl was likely their niece Suzanne Thill.",
+    "skin": "#f4dcc8", "hair": "#d8b25a", "bodice": "#7a9a6a", "skirt": "#7a9a6a", "bustle": true
   },
   "josephine": {
-    "base": "love_base", "skin": "#f2d6c0", "hair": "#8a4a2a", "bodice": "#f2ede4", "skirt": "#b0b8c4", "brooch": "#e63946"
+    "base": "love_base", "name": "Josephine Bracken", "from": "Hong Kong; Dapitan",
+    "fact": "Brought her blind adoptive father to Rizal in Dapitan (1895).",
+    "documented": "Born in Hong Kong to Irish parents; photos survive. Mid-1890s blouse with leg-of-mutton sleeves is plausible.",
+    "skin": "#f2d6c0", "hair": "#8a4a2a", "bodice": "#f2ede4", "puff": 4.6, "skirt": "#3a3e4a", "brooch": "#e63946"
   }
 }

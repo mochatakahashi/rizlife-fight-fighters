@@ -1,11 +1,11 @@
 # RizLife Fighters
 
-A 2D pixel fighting game about the life and works of José Rizal. Two players fight on one
+A 2D fighting game about the life and works of José Rizal. Two players fight on one
 screen, best of three rounds, and the loser has to answer a Rizal question.
 
 **Fight. Answer. Remember.**
 
-Built with **Godot 4.7** (GDScript, GL Compatibility renderer, 480×270 pixel resolution).
+Built with **Godot 4.7** (GDScript, GL Compatibility renderer). The game is laid out on a 480×270 grid and drawn sharp at any window size.
 
 ## Run it
 
@@ -13,7 +13,7 @@ Built with **Godot 4.7** (GDScript, GL Compatibility renderer, 480×270 pixel re
 2. Open Godot, choose **Import**, and pick this folder's `project.godot`.
 3. Press **F5**.
 
-All art is placeholder blocks for now, so the game can be played and tuned before the sprites are ready.
+Every character is drawn in code, dressed in their own costume (see **Characters and costumes**). Hand-drawn sprites can replace them later without code changes.
 
 ## Controls
 
@@ -29,7 +29,8 @@ All art is placeholder blocks for now, so the game can be played and tuned befor
 
 - Hold **back** to block. Low attacks need a crouching block; jump-ins need a standing block.
 - Controller 1 is P1 and controller 2 is P2.
-- In menus, use the arrow keys and Enter, or a controller.
+- **Mouse:** click buttons, fighters, styles, stages and quiz answers. On the select screen, right-click undoes a pick.
+- In menus you can also use the arrow keys and Enter, or a controller.
 - **F1** shows hitboxes (red) and hurtboxes (green). **F11** toggles fullscreen.
 - To change the default controls, edit `tools/generate_input_map.gd` and run
   `godot --headless --path . -s res://tools/generate_input_map.gd`. You can also
@@ -43,10 +44,10 @@ Supers are `QCF x2 + X+Y` and need a full gauge.
 
 | Proposal milestone | Status |
 |---|---|
-| 1. Prototype: Rizal, one stage | Done (all 6 stages drawn as placeholders) |
+| 1. Prototype: Rizal, one stage | Done, with all 6 stages drawn |
 | 2. Core: Lovers and Writer styles, quiz | Done: both styles, LB switching, the quiz after every match |
-| 3. Content: four more fighters, stages | Ibarra/Simoun playable. Elias, María Clara and Padre Dámaso are listed as "soon". |
-| 4. Polish: art, sound, playtest | Not started. Sprites and stage art drop in without code changes (see `art/README.md`). |
+| 3. Content: four more fighters, stages | Done: all five fighters are playable (Rizal, Ibarra/Simoun, Elias, María Clara, Padre Dámaso) on six stages |
+| 4. Polish: art, sound, playtest | Art: dressed, animated characters, lit stages, hit effects, a modern HUD and screen fades. Sound and playtesting are not started. |
 
 **Screens:** title → player names → fighter/style select → stage select → fight → Rizal question → leaderboard (rematch, select, or menu).
 
@@ -64,26 +65,76 @@ Supers are `QCF x2 + X+Y` and need a full gauge.
 
 **Leaderboard:** saved on this computer (`user://leaderboard.json`), with a separate table for each term.
 
+## Characters, costumes and weapons
+
+Every character is drawn by `scripts/art/character_art.gd` in a costume from `data/looks.json`. Each one fights with something from their story.
+
+| Fighter | Costume (from the sources) | Fights with | Moves |
+|---|---|---|---|
+| José Rizal | Black suit, white high collar, dark tie, moustache | **His pen.** Writer style holds a quill and fires Quill Flick, swings the *Noli* (counter) and the *Fili* (rush), and *Mi Último Adiós* is a glowing page of verse. Lovers style calls his nine loves. | Writer: Quill Flick, Noli Me Tangere, Fili Rush, Rally, Century Hence, *Mi Último Adiós*. Lovers: one move per love. |
+| Ibarra / Simoun | Ibarra: "dressed in deep mourning", "remarkable stature". Simoun: pith helmet, "enormous blue goggles", long white hair, sparse black beard, English fashion | Ibarra: the knife he seized at the banquet (Knife Grab) and a book (his school). Simoun: the lamp bomb from the wedding in *El Fili*. | Knife Grab, Scholar's Stance; Simoun: Lamp Bomb, Gold Shower, Vengeance |
+| Elias | Athletic, long unkempt black hair, dark striped shirt, barefoot | **His oar**, the "wide paddle" he steers with in the *Noli* | `QCF + A/B` Oar Sweep (low), `F, F + A/B` River Dash, `QCF x2 + X+Y` Sacrifice (costs him 100 health) |
+| María Clara | Piña baro't saya with tapis, pearls in her hair, skin "white as cotton" | Her fan, her locket, her veil and the convent bell | `QCB + X/Y` Veil Counter, `QCF + X` Locket Throw, `QCF x2 + X+Y` Convent Bell (a growing shockwave) |
+| Padre Dámaso | Franciscan habit and cord, graying tonsure, "herculean frame", bare feet | His hands (a grappler) and his sermon | `360 + X` Sermon Slam (command grab), `[D] U + A/B` Pulpit Pound (overhead), `QCF x2 + X+Y` Hell Sermon (book raised, fire-and-brimstone shockwave) |
+
+Padre Salvi ("thin, wasted, and pale") and Sisa are drawn too, ready for PvE.
+
+### Rizal's nine loves
+
+In Lovers style each special calls one of them. Rizal steps out, she does the move with her name and where he knew her over her head, and then he steps back in. On the select screen, hover over her face to see a short fact.
+
+| Love | Where | Fact shown in the game | Outfit |
+|---|---|---|---|
+| Segunda Katigbak | Lipa, Batangas | His first love (c. 1877); already engaged to Manuel Luz | Baro't saya (she is short and rosy-cheeked, from Rizal's *Memorias*) |
+| Leonor Valenzuela ("Orang") | Manila | Rizal *reportedly* wrote her notes in invisible ink (textbook only) | Baro't saya |
+| Leonor Rivera | Camiling, Tarlac | Signed her letters "Taimis"; often seen as María Clara's model | Baro't saya |
+| Consuelo Ortiga y Pérez | Madrid | He wrote her a poem in 1883. Craig gives the title as "A la Señorita C. O. y **R.**" | Bustle dress, lace mantilla |
+| O-Sei-San (Usui Seiko) | Tokyo | His guide in 1888; they talked in French | Meiji-era kimono, katana |
+| Gertrude Beckett ("Gettie") | London | His landlord's daughter; he carved the sisters' heads (textbook only) | 1880s bustle dress |
+| Nelly Boustead | Biarritz | "Had great skill with the foils" (Craig) | Dress, fencing foil |
+| Suzanne Jacoby | Brussels | "Petite Suzanne" wrote him longing letters. **Disputed:** she may have been the landladies' niece, Suzanne Thill. | 1890 dress |
+| Josephine Bracken | Hong Kong; Dapitan | Brought her blind adoptive father to Rizal in Dapitan (1895) | 1890s blouse with leg-of-mutton sleeves |
+
+Each look in `looks.json` has a `documented` line separating what the sources say from what is just likely for the period. Have your instructor check the facts, especially the ones marked textbook-only or disputed.
+
+**Sources:**
+- Novel descriptions: the *Noli Me Tángere* and *El Filibusterismo* English translations by Charles Derbyshire, on Project Gutenberg ([6737](https://www.gutenberg.org/ebooks/6737), [10676](https://www.gutenberg.org/ebooks/10676)).
+- Life details: Austin Craig, *Lineage, Life and Labors of José Rizal* (1913, [Gutenberg 6867](https://www.gutenberg.org/ebooks/6867)), Wikipedia, the Philippine Diary Project (Consuelo), UP (O-Sei-San) and Philstar (the Suzanne correction).
+- Several popular details trace back to Zaide's textbook, which is worth checking in print.
+
+### Editing costumes
+
+A look can start from another with `"base"`, and `"alt"` gives player 2 different colours in mirror matches. Parts:
+- `top`: `suit`, `camisa`, `baro`, `habit`, `bodice`, `kimono`
+- `bottom`: `trousers`, `rolled`, `skirt`, `robe`, `kimono`
+- `feet`: `shoes`, `barefoot`, `sandals`, `geta`
+- `hair_style`: `side_part`, `wavy`, `short`, `long`, `long_white`, `bun`, `updo`, `japanese`, `tonsure`
+- extras: `headwear` (`pith_helmet`, `salakot`, `mantilla`), `eyewear` (`blue_goggles`), `facial_hair`, `neckwear`, `vest`, `frock`, `shirt_stripe`, `hair_pearls`, `boutonniere`, `locket`, `accessory`
+
+A move's `prop` puts a weapon in the hand: `quill`, `book`, `knife`, `lamp`, `oar`, `fan`, `katana`, `foil`, `scalpel`.
+Run `godot --path . res://tools/screenshots.tscn` to get `00_costumes.png`, every costume side by side.
 ## Project layout
 
 ```
 data/                  Everything you'll tune or write, in JSON
   rules.json           term name, rounds, timers, points
   roster.json          the 5 fighters on the select screen
-  stages.json          the 6 stages, their question topics and placeholder colours
+  stages.json          the 6 stages, their question topics and colours
+  looks.json           every character's costume, including Rizal's nine loves
   questions.json       the Rizal question bank
   fighters/            move lists and frame data (common_normals.json + one file per fighter)
 scenes/                One scene per screen (they build their UI in code)
 scripts/
-  autoload/            Game (session state), Leaderboard, QuestionBank
+  autoload/            Game (session state), Leaderboard, QuestionBank, Transition (screen fades)
+  art/                 CharacterArt (draws the dressed characters), Gfx (glows, gradients, panels)
   fighter/             Fighter state machine, input buffer, input sources (player, CPU, scripted), projectiles
-  fight/               Fight (rounds, hits), HUD, Stage
+  fight/               Fight (rounds, hits), HUD, Stage, FightFx (sparks, dust)
   ui/                  Menus, select, quiz, leaderboard
   core/                Colours and UI helpers
 art/                   Sprites and stage backdrops go here (see art/README.md)
 audio/                 Sound effects and music go here
 tests/                 Headless smoke test
-tools/                 Input map generator
+tools/                 Input map generator, screenshot tool
 ```
 
 ## Adding and tuning moves
@@ -103,13 +154,16 @@ Frame counts are at 60 per second.
 | `knockdown`, `launch` | Knocks down, and how high they fly |
 | `move_x` | Forward speed while the move is coming out (lunges) |
 | `invuln` | `[from, to]` frames where the move can't be hit (anti-airs, supers) |
-| `projectile` | `speed`, `vy`, `gravity`, `size`, `offset`, `delay`, `life`, `color`, `shape` (`rect`/`heart`/`orb`), `opacity` |
+| `projectile` | `speed`, `vy`, `gravity`, `size`, `offset`, `delay`, `life`, `color`, `shape` (`rect`/`orb`/`heart`/`quill`/`letter`/`ink`/`tear`/`lamp`/`pillar`), `opacity` |
 | `counter_window`, `counter_hit` | Counter stance: frames it catches attacks, and the hit it answers with |
 | `type: "throw"` | Can't be blocked; grabs grounded opponents |
 | `cancel` | This move can be cancelled into a special when it connects |
 | `effect` | `slow` (Farewell Tears) |
 | `kind: "super"`, `gauge_cost` | Super flash, and how much gauge it uses |
 | `heavy` | Overrides used when the heavy button (Y or B) is pressed |
+| `assist` | One of Rizal's loves (a look id) steps in and does this move while Rizal steps out |
+| `prop` | Something held during the move: `katana`, `foil`, `knife`, `quill`, `fan`, `lamp`, `book` |
+| `anim` | Force a body animation, e.g. `uppercut`, `lunge`, `sweep`, `cast` |
 
 To add a fighter:
 1. Copy `ibarra.json`, give it a new `id`, and write its specials.
@@ -166,7 +220,7 @@ The proposal leaves these to the team. The code has a placeholder for each one, 
    per-term board on each computer. A shared board needs a small online database (Supabase would work)
    and a way to name players. Use nicknames, not student IDs.
 3. **When does a term end?** Change `current_term` in `rules.json`; each term name gets its own table.
-4. **Physician style** is optional in the proposal and not built yet.
+4. **Physician style** is optional in the proposal and not built yet (a scalpel prop is ready for it).
 5. **PvE mode** (story stages, Padre Salvi and Sisa as bosses) is not built yet. `CpuInput` is the
    starting point for boss behaviour.
 
@@ -175,6 +229,4 @@ The proposal leaves these to the team. The code has a placeholder for each one, 
 - Hit detection uses rectangles that the Fight node checks in a fixed order each frame. The proposal
   planned Area2D nodes, but their overlaps update a physics frame late, which makes trades and combos
   inconsistent. F1 shows the boxes.
-- The default font is used everywhere. A free pixel font (for example one under the SIL Open Font
-  License) will look much closer to the sample UI.
 - Before exporting, check that `data/*.json` is included in the build (Project → Export → Resources).

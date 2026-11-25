@@ -42,8 +42,8 @@ static func hgradient(ci: CanvasItem, rect: Rect2, left: Color, right: Color) ->
 
 
 ## A rounded panel with an optional border and drop shadow.
-static func panel(ci: CanvasItem, rect: Rect2, bg: Color, border := Color(0, 0, 0, 0), radius := 4, shadow := 4) -> void:
-	var key := "%s|%s|%d|%d" % [bg.to_html(), border.to_html(), radius, shadow]
+static func panel(ci: CanvasItem, rect: Rect2, bg: Color, border := Color(0, 0, 0, 0), radius := 4, shadow := 4, border_width := 1) -> void:
+	var key := "%s|%s|%d|%d|%d" % [bg.to_html(), border.to_html(), radius, shadow, border_width]
 	var sb: StyleBoxFlat = _panels.get(key)
 	if sb == null:
 		sb = StyleBoxFlat.new()
@@ -52,7 +52,7 @@ static func panel(ci: CanvasItem, rect: Rect2, bg: Color, border := Color(0, 0, 
 		sb.anti_aliasing = true
 		if border.a > 0.0:
 			sb.border_color = border
-			sb.set_border_width_all(1)
+			sb.set_border_width_all(border_width)
 		if shadow > 0:
 			sb.shadow_size = shadow
 			sb.shadow_color = Color(0, 0, 0, 0.35)

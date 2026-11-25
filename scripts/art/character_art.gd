@@ -268,6 +268,26 @@ static func pose(kind: String, t: float = 0.0, p: float = 0.0) -> Dictionary:
 			ps["af"] = [lerpf(0.8, 1.45, e), lerpf(1.6, 0.35, e)]
 			ps["ab"] = [lerpf(0.5, 1.35, e), lerpf(1.5, 0.45, e)]
 			ps["lean"] = 0.25 * e
+		"slam":
+			# Both arms come down from overhead (Padre Dámaso's Pulpit Pound).
+			ps["af"] = [lerpf(2.9, 1.1, e), lerpf(0.4, 0.15, e)]
+			ps["ab"] = [lerpf(2.7, 0.9, e), lerpf(0.5, 0.2, e)]
+			ps["lean"] = lerpf(-0.15, 0.4, e)
+			ps["lift"] = 6.0 * sin(e * PI)
+			ps["lf"] = [lerpf(0.3, 0.6, e), lerpf(-0.1, -0.6, e)]
+			ps["lb"] = [lerpf(-0.3, -0.5, e), 0.05]
+		"swing", "swing_low":
+			# A weapon swung from high behind to low in front (Elias's oar).
+			if kind == "swing_low":
+				_crouch(ps)
+			ps["af"] = [lerpf(3.2, 1.15 if kind == "swing_low" else 1.5, e), lerpf(0.3, 0.0, e)]
+			ps["ab"] = [lerpf(2.8, 1.0, e), lerpf(0.4, 0.2, e)]
+			ps["lean"] = float(ps["lean"]) + 0.2 * e
+		"preach":
+			# Book held up high, other arm thrown out (Padre Dámaso's Hell Sermon).
+			ps["af"] = [lerpf(1.2, 2.2, e), lerpf(1.2, 0.3, e)]
+			ps["ab"] = [lerpf(0.5, 1.6, e), lerpf(1.4, 0.1, e)]
+			ps["lean"] = lerpf(0.0, -0.18, e)
 		"summon":
 			ps["af"] = [lerpf(0.8, 2.2, e), lerpf(1.5, 0.3, e)]
 			ps["ab"] = [0.4, 1.5]
@@ -412,7 +432,7 @@ static func draw_head(ci: CanvasItem, lk: Dictionary, center: Vector2, scale: fl
 static func _figure(pt: Painter, lk: Dictionary, body: Frame, arm_f: PackedVector2Array, arm_b: PackedVector2Array,
 		leg_f: PackedVector2Array, leg_b: PackedVector2Array, head_tilt: float, prop: String) -> void:
 	var wd := float(lk.get("width", 1.0))
-	_back_extras(pt, lk, body)
+	_back_extras(pt, lk, body, prop)
 	_arm(pt, lk, arm_b, false)
 	_leg(pt, lk, leg_b, false)
 	_leg(pt, lk, leg_f, true)
@@ -428,13 +448,13 @@ static func _figure(pt: Painter, lk: Dictionary, body: Frame, arm_f: PackedVecto
 	_prop(pt, lk, arm_f, prop)
 
 
-static func _back_extras(pt: Painter, lk: Dictionary, body: Frame) -> void:
+static func _back_extras(pt: Painter, lk: Dictionary, body: Frame, prop: String) -> void:
 	if str(lk.get("top", "")) == "habit":
 		# The friar's hood, folded down behind the neck.
 		var ws := 15.0 * float(lk.get("width", 1.0))
 		pt.poly(body.pts([-1.0, TORSO + 2.5, -ws / 2.0 - 1.5, TORSO + 1.0, -ws / 2.0 - 2.2, TORSO - 5.0, -ws / 2.0 + 1.5, TORSO - 7.5]),
 			_col(lk, "robe", "#5a3e26").darkened(0.18))
-	if str(lk.get("accessory", "")) == "oar_back":
+	if str(lk.get("accessory", "")) == "oar_back" and prop != "oar":
 		# Elias's oar, slung across his back with the blade down by his legs.
 		var wood := Color("6b4a2a")
 		var a := body.at(-10.0, -4.0)
@@ -464,6 +484,10 @@ static func _arm(pt: Painter, lk: Dictionary, j: PackedVector2Array, front: bool
 			pt.limb(j[0], j[1], shirt, 5.6)
 			pt.limb(j[1], cuff, shirt, 5.2)
 			pt.limb(cuff, j[2], skin, 3.6)
+			if lk.has("shirt_stripe"):
+				var stripe := _col(lk, "shirt_stripe", "#5f7088").darkened(shade)
+				pt.line(j[0], j[1], stripe, 1.0)
+				pt.line(j[1], cuff, stripe, 1.0)
 		"baro":
 			var sheer := _col(lk, "shirt", "#f6f1e7").darkened(shade)
 			pt.limb(j[0], j[1], sheer, 5.0)
@@ -475,7 +499,7 @@ static func _arm(pt: Painter, lk: Dictionary, j: PackedVector2Array, front: bool
 			pt.poly(PackedVector2Array([j[1] + n * 3.2, j[1] - n * 3.2, j[2] - n * 3.6, j[2] + n * 5.0]), robe)
 		"bodice":
 			var cloth := _col(lk, "bodice", "#3e5a7a").darkened(shade)
-			pt.circ(j[0], 3.6, cloth)
+			pt.circ(j[0], float(lk.get("puff", 3.6)), cloth)
 			pt.limb(j[0], j[1], cloth, 4.2)
 			pt.limb(j[1], j[2] - d, cloth, 3.6)
 		"kimono":
@@ -549,6 +573,11 @@ static func _torso(pt: Painter, lk: Dictionary, body: Frame, wd: float) -> void:
 		"camisa":
 			var shirt := _col(lk, "shirt", "#ece4cf")
 			pt.poly(body.pts([-wh / 2.0 - 1.0, -6.0, wh / 2.0 + 1.6, -6.0, ws / 2.0 + 0.6, TORSO, -ws / 2.0, TORSO]), shirt)
+			if lk.has("shirt_stripe"):
+				var stripe := _col(lk, "shirt_stripe", "#5f7088")
+				for k in 5:
+					var sx := -ws / 2.0 + 2.5 + k * (ws - 4.0) / 4.0
+					pt.line(body.at(sx * 0.85, -5.5), body.at(sx, TORSO - 0.5), stripe, 1.0)
 			pt.dpoly(body.pts([ws / 2.0 - 4.5, TORSO + 0.2, ws / 2.0 - 0.4, TORSO + 0.2, ws / 2.0 - 2.2, TORSO - 4.5]), skin)
 			pt.line(body.at(-1.0, TORSO - 7.0), body.at(0.5, -4.0), shirt.darkened(0.18), 0.8)
 			pt.line(body.at(3.0, TORSO - 9.0), body.at(4.0, -3.0), shirt.darkened(0.12), 0.7)
@@ -620,9 +649,6 @@ static func _skirt(pt: Painter, lk: Dictionary, body: Frame, wd: float, leg_f: P
 	var spread := 3.0 if bottom == "kimono" else 5.0
 	minx = minf(minx - spread, waist_b.x - 1.0)
 	maxx = maxf(maxx + spread + 0.5, waist_f.x + 1.0)
-	if bottom == "kimono":
-		minx = maxf(minx, waist_b.x - 3.0)
-		maxx = minf(maxx, waist_f.x + 3.0)
 	hem = maxf(hem - 1.5, maxf(waist_b.y, waist_f.y) + 8.0)
 	var col: Color
 	match bottom:
@@ -708,6 +734,10 @@ static func _head_parts(pt: Painter, lk: Dictionary, hd: Frame, neck_base: Vecto
 			pt.poly(hd.pts([-5.8, 0.0, -5.6, 6.8, 4.6, 6.8, 5.2, 4.2, 0.0, 4.6]), hair)
 	if lk.has("comb") and style == "bun":
 		pt.line(hd.at(-7.8, 5.6), hd.at(-3.8, 7.4), _col(lk, "comb", "#d4af37"), 1.4)
+	if lk.has("hair_pearls"):
+		var pearl := _col(lk, "hair_pearls", "#fbf8f0")
+		for q in [[-8.4, 3.6], [-7.6, 5.6], [-5.6, 6.6], [-3.6, 5.8], [-1.0, 6.9], [1.6, 6.7]]:
+			pt.dot(hd.at(q[0], q[1]), 0.75, pearl)
 	if style == "japanese":
 		var pin := _col(lk, "pin", "#e63946")
 		pt.line(hd.at(-8.0, 8.5), hd.at(1.0, 9.8), pin, 0.9)
@@ -728,11 +758,24 @@ static func _head_parts(pt: Painter, lk: Dictionary, hd: Frame, neck_base: Vecto
 			for q in [[3.8, -5.1], [2.0, -5.6], [0.2, -5.5], [-1.6, -4.9], [4.7, -4.2], [-2.8, -3.8]]:
 				pt.dot(hd.at(q[0], q[1]), 0.75, fh)
 			pt.line(hd.at(2.6, -2.4), hd.at(5.0, -2.2), fh, 0.6)
-	if str(lk.get("eyewear", "")) == "blue_glasses":
-		pt.dot(hd.at(3.0, 0.9), 2.0, Color(0.3, 0.5, 0.95, 0.85))
-		pt.dot(hd.at(3.6, 1.6), 0.5, Color(1, 1, 1, 0.8))
-		pt.line(hd.at(1.0, 1.2), hd.at(-1.6, 1.5), Color("202028"), 0.7)
+	match str(lk.get("eyewear", "")):
+		"blue_glasses":
+			pt.dot(hd.at(3.0, 0.9), 2.0, Color(0.3, 0.5, 0.95, 0.85))
+			pt.dot(hd.at(3.6, 1.6), 0.5, Color(1, 1, 1, 0.8))
+			pt.line(hd.at(1.0, 1.2), hd.at(-1.6, 1.5), Color("202028"), 0.7)
+		"blue_goggles":
+			# Simoun's "enormous blue goggles".
+			pt.dot(hd.at(3.0, 0.9), 2.9, Color("202028"))
+			pt.dot(hd.at(3.0, 0.9), 2.4, Color(0.25, 0.45, 0.95, 0.92))
+			pt.dot(hd.at(3.8, 1.8), 0.7, Color(1, 1, 1, 0.85))
+			pt.line(hd.at(0.4, 1.4), hd.at(-2.0, 1.8), Color("202028"), 0.9)
 	match headwear:
+		"pith_helmet":
+			# Simoun's pith helmet: a rounded dome with a wide brim.
+			var helmet := _col(lk, "hat", "#e8e2d0")
+			pt.poly(hd.pts([-6.6, 4.6, 6.8, 4.6, 6.0, 7.6, 3.6, 10.2, 0.0, 11.0, -3.6, 10.2, -6.0, 7.6]), helmet)
+			pt.poly(hd.pts([-9.6, 4.0, 10.0, 4.0, 9.0, 5.4, -8.6, 5.4]), helmet.darkened(0.08))
+			pt.line(hd.at(-6.2, 5.8), hd.at(6.4, 5.8), helmet.darkened(0.3), 0.9)
 		"salakot":
 			var hat := _col(lk, "hat", "#c8a565")
 			pt.poly(hd.pts([-11.5, 5.0, 11.5, 5.0, 0.0, 12.0]), hat)
@@ -776,4 +819,16 @@ static func _prop(pt: Painter, lk: Dictionary, j: PackedVector2Array, prop: Stri
 		"lamp":
 			pt.circ(hand + d * 2.8, 2.6, Color("f4b400"))
 		"book":
-			pt.poly(PackedVector2Array([hand + Vector2(-2.5, -3.5), hand + Vector2(3.5, -3.5), hand + Vector2(3.5, 3.0), hand + Vector2(-2.5, 3.0)]), Color("6b2232"))
+			var cover := _col(lk, "book_color", "#6b2232")
+			pt.poly(PackedVector2Array([hand + Vector2(-3.0, -4.0), hand + Vector2(4.0, -4.0), hand + Vector2(4.0, 3.5), hand + Vector2(-3.0, 3.5)]), cover)
+			pt.line(hand + Vector2(-2.4, -3.0), hand + Vector2(-2.4, 2.6), Color("f2efe6"), 0.8)
+			pt.dot(hand + Vector2(0.6, -0.3), 0.9, Color("d4af37"))
+		"oar":
+			# Elias's oar: a long shaft through the hand with the blade out in front.
+			var wood := Color("6b4a2a")
+			var tip := hand + d * 16.0
+			pt.limb(hand - d * 12.0, tip, wood, 1.8)
+			var n := Vector2(-d.y, d.x)
+			pt.poly(PackedVector2Array([tip + n * 2.0, tip - n * 2.0, tip - n * 2.8 + d * 10.0, tip + n * 2.8 + d * 10.0]), wood.lightened(0.15))
+		"scalpel":
+			pt.limb(hand, hand + d * 5.0, Color("d8dde6"), 0.9)
