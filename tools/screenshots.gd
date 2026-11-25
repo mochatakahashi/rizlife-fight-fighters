@@ -33,11 +33,17 @@ func _ready() -> void:
 	await _shot("res://scenes/select.tscn", "03_select")
 	await _shot("res://scenes/select.tscn", "03b_select_lovers", func(n): Game.players[0]["style"] = "lovers", func(n): n._mouse = Vector2(87.5, 248))
 	Game.players[0]["style"] = "writer"
+	await _shot("res://scenes/select.tscn", "03c_select_scrolled", Callable(), func(n): n._scroll_target = n._max_scroll(); n._scroll = n._max_scroll())
 	await _shot("res://scenes/select.tscn", "04_stage", func(n): n.choosing_stage = true)
+	var saved := Game.players.duplicate(true)
+	Game.players[1] = {"name": "Ben", "fighter": "maria_clara", "style": "devotion", "cpu": false}
+	await _shot("res://scenes/versus.tscn", "04b_versus", Callable(), func(n): n._t = 1.6)
+	Game.players = saved
 	await _shot("res://scenes/fight.tscn", "05_fight", _setup_fight.bind("writer", "madrid"), _play_quill)
 	await _shot("res://scenes/fight.tscn", "06_lovers_assist", _setup_fight.bind("lovers", "paris"), _play_assist)
 	await _shot("res://scenes/fight.tscn", "06b_new_fighters", _setup_pair.bind("maria_clara", "devotion", "padre_damaso", "friar", "calamba"), _play_sermon)
 	await _shot("res://scenes/fight.tscn", "06c_life_fighters", _setup_pair.bind("juan_luna", "painter", "paciano", "revolutionary", "manila"), _play_spoliarium)
+	await _shot("res://scenes/fight.tscn", "06d_fencer", _setup_pair.bind("nelly", "fencer", "padre_salvi", "curate", "paris"), _play_lunge)
 	await _shot("res://scenes/fight.tscn", "07_pause", _setup_fight.bind("writer", "berlin"), func(f): f.step(); f.paused_by = 0)
 	await _shot("res://scenes/quiz.tscn", "08_quiz")
 	await _shot("res://scenes/leaderboard.tscn", "09_leaderboard")
@@ -125,6 +131,15 @@ func _play_spoliarium(f: Fight) -> void:
 	var qcf := ScriptedInput.hold(0, 1, 2) + ScriptedInput.hold(1, 1, 2) + ScriptedInput.hold(1, 0, 2)
 	(f.config["sources"][0] as ScriptedInput).add(qcf + ScriptedInput.hold(0, 1, 2) + ScriptedInput.hold(1, 1, 2) + ScriptedInput.hold(1, 0, 1, {"lp": true, "hp": true}))
 	for i in 66:
+		f.step()
+
+
+## Nelly Boustead fences Padre Salvi: a lunge with her foil.
+func _play_lunge(f: Fight) -> void:
+	_stage_moment(f)
+	f.fighters[1].position.x = 236.0
+	(f.config["sources"][0] as ScriptedInput).add(ScriptedInput.qcf(1, "lp"))
+	for i in 18:
 		f.step()
 
 

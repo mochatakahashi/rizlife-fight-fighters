@@ -177,6 +177,39 @@ func _draw() -> void:
 			draw_rect(Rect2(box.position + Vector2(4, box.size.y * 0.55), Vector2(box.size.x - 8, box.size.y * 0.3)), Color("8a3a22"))
 			for k in 3:
 				draw_circle(box.position + Vector2(8.0 + k * 9.0, box.size.y * 0.5), 2.2, Color("d8a070"), true, -1.0, true)
+		"petals":
+			# Cherry blossom petals swirling (O-Sei-San, Tokyo in spring 1888).
+			for k in 5:
+				var a := age * 0.2 + k * TAU / 5.0
+				var p := Vector2(cos(a), sin(a)) * r * 0.8
+				draw_set_transform(p, a, Vector2(1.0, 0.55))
+				draw_circle(Vector2.ZERO, r * 0.45, Color(c.lightened(0.15 * (k % 2)), opacity), true, -1.0, true)
+			draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+		"clay":
+			# A lump of sculptor's clay (Gertrude Beckett).
+			draw_circle(Vector2.ZERO, r + 0.8, ink, true, -1.0, true)
+			draw_circle(Vector2.ZERO, r, c, true, -1.0, true)
+			draw_circle(Vector2(r * 0.35, r * 0.2), r * 0.5, c.darkened(0.12), true, -1.0, true)
+			draw_circle(Vector2(-r * 0.3, -r * 0.35), r * 0.3, Color(1, 1, 1, 0.35 * opacity), true, -1.0, true)
+		"shell":
+			# A Dapitan seashell, spinning.
+			draw_set_transform(Vector2.ZERO, sin(age * 0.3) * 0.5, Vector2.ONE)
+			var fan := PackedVector2Array([Vector2(0, r * 0.7)])
+			for k in 9:
+				var a := PI + k * PI / 8.0
+				fan.append(Vector2(cos(a), sin(a)) * r)
+			draw_colored_polygon(fan, c)
+			for k in range(1, 8):
+				var a := PI + k * PI / 8.0
+				draw_line(Vector2(0, r * 0.7), Vector2(cos(a), sin(a)) * r, c.darkened(0.25), 0.6, true)
+			draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+		"notes":
+			# Music notes (Leonor Rivera at the piano, Sisa's song).
+			for k in 2:
+				var off := Vector2(k * 5.0 - 2.5, sin(age * 0.3 + k) * 2.0)
+				draw_circle(off + Vector2(0, 2.5), 2.0, c, true, -1.0, true)
+				draw_line(off + Vector2(1.8, 2.5), off + Vector2(1.8, -4.0), c, 0.9, true)
+			draw_line(Vector2(-0.7, -4.0), Vector2(4.3, -4.0 + sin(age * 0.3 + 1) * 2.0 - sin(age * 0.3) * 2.0), c, 1.2, true)
 		"locket":
 			draw_line(Vector2(-r * 0.2, -r * 1.6), Vector2(0, -r), Color(0.95, 0.85, 0.5, opacity), 0.8, true)
 			draw_circle(Vector2.ZERO, r + 0.8, ink, true, -1.0, true)

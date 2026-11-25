@@ -1,0 +1,20 @@
+{
+  "id": "nelly", "name": "Nelly Boustead", "short_name": "Nelly",
+  "health": 950, "walk_speed": 2.2, "back_speed": 1.9, "jump_velocity": 7.6, "jump_speed_x": 2.7,
+  "look": "nelly", "style_order": ["fencer"], "normals": {},
+  "styles": {
+    "fencer": {
+      "label": "Fencer", "look": "nelly",
+      "blurb": "\"Great skill with the foils.\" Long thrusts, a fast flèche and a riposte.",
+      "gauge_name": "Duel", "gauge_color": "#c0c6d0",
+      "specials": [
+        {"id": "lunge", "name": "Lunge", "motion": "qcf", "buttons": ["lp", "hp"], "prop": "foil", "anim": "lunge", "startup": 7, "active": 6, "recovery": 18, "move_x": 4.5, "damage": 80, "hitstun": 20, "blockstun": 12, "cancel": true, "hitbox": [8, -56, 56, 8]},
+        {"id": "fleche", "name": "Flèche", "motion": "ff", "buttons": ["lk", "hk"], "prop": "foil", "anim": "lunge", "startup": 4, "active": 12, "recovery": 16, "move_x": 7.0, "damage": 75, "hitstun": 18, "hitbox": [8, -56, 54, 8]},
+        {"id": "riposte", "name": "Riposte", "motion": "qcb", "buttons": ["lp", "hp"], "prop": "foil", "startup": 2, "active": 0, "recovery": 22, "counter_window": [2, 18],
+         "counter_hit": {"name": "Riposte", "damage": 125, "knockdown": true, "launch": 4.0, "kind": "special"}},
+        {"id": "grand_salute", "name": "Grand Salute", "kind": "super", "motion": "qcf2", "buttons": ["lp+hp"], "prop": "foil", "anim": "lunge", "gauge_cost": 100, "startup": 5, "active": 14, "recovery": 30, "invuln": [0, 16], "move_x": 6.5,
+         "damage": 300, "knockdown": true, "launch": 6.5, "hitstop": 14, "hitbox": [6, -64, 60, 30]}
+      ]
+    }
+  }
+}

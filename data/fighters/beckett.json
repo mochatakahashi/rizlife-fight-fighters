@@ -1,0 +1,21 @@
+{
+  "id": "beckett", "name": "Gertrude Beckett", "short_name": "Beckett",
+  "health": 950, "walk_speed": 1.9, "back_speed": 1.7, "jump_velocity": 7.4, "jump_speed_x": 2.5,
+  "look": "beckett", "style_order": ["sculptor"], "normals": {},
+  "styles": {
+    "sculptor": {
+      "label": "Sculptor's Muse", "look": "beckett",
+      "blurb": "\"Gettie\" of Primrose Hill, London. Lobs clay and sweeps low.",
+      "gauge_name": "Clay", "gauge_color": "#d08a4e", "damage_mult": 0.95,
+      "specials": [
+        {"id": "clay_toss", "name": "Clay Toss", "motion": "qcf", "buttons": ["lp", "hp"], "startup": 11, "active": 1, "recovery": 22, "damage": 65, "hitstun": 18, "blockstun": 12,
+         "projectile": {"speed": 3.0, "vy": -3.0, "gravity": 0.13, "size": [12, 12], "offset": [22, -56], "color": "#b5835a", "shape": "clay", "life": 170}},
+        {"id": "ink_and_clay", "name": "Ink and Clay", "motion": "qcb", "buttons": ["lk", "hk"], "startup": 14, "active": 6, "recovery": 18, "height": "low", "damage": 80, "knockdown": true, "launch": 3.0, "hitbox": [12, -14, 50, 14]},
+        {"id": "primrose_hill", "name": "Primrose Hill", "motion": "dp", "buttons": ["lp", "hp"], "startup": 5, "active": 8, "recovery": 26, "invuln": [0, 7], "damage": 95, "knockdown": true, "launch": 5.0, "hitbox": [4, -94, 28, 66]},
+        {"id": "three_sisters", "name": "Three Sisters", "kind": "super", "motion": "qcf2", "buttons": ["lp+hp"], "anim": "cast", "gauge_cost": 100, "startup": 8, "active": 1, "recovery": 36, "invuln": [0, 12],
+         "damage": 280, "hitstun": 30, "knockdown": true, "launch": 6.0, "hitstop": 12,
+         "projectile": {"speed": 3.4, "size": [30, 30], "offset": [28, -44], "color": "#b5835a", "shape": "clay", "life": 130}}
+      ]
+    }
+  }
+}

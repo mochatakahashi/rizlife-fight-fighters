@@ -1,0 +1,22 @@
+{
+  "id": "valenzuela", "name": "Leonor Valenzuela", "short_name": "Valenzuela",
+  "health": 950, "walk_speed": 2.0, "back_speed": 1.8, "jump_velocity": 7.6, "jump_speed_x": 2.6,
+  "look": "valenzuela", "style_order": ["neighbour"], "normals": {},
+  "styles": {
+    "neighbour": {
+      "label": "Neighbour", "look": "valenzuela",
+      "blurb": "\"Orang\". Her invisible-ink notes are hard to see coming.",
+      "gauge_name": "Ink", "gauge_color": "#4fb3a8", "damage_mult": 0.95,
+      "specials": [
+        {"id": "invisible_ink", "name": "Invisible Ink", "motion": "qcf", "buttons": ["lp", "hp"], "startup": 12, "active": 1, "recovery": 24, "damage": 55, "hitstun": 16, "blockstun": 12,
+         "projectile": {"speed": 4.2, "size": [14, 8], "offset": [26, -52], "color": "#2ec4b6", "opacity": 0.2, "shape": "ink", "life": 140}},
+        {"id": "secret_note", "name": "Secret Note", "motion": "qcb", "buttons": ["lp", "hp"], "startup": 2, "active": 0, "recovery": 24, "counter_window": [2, 20],
+         "counter_hit": {"name": "Secret Note", "damage": 110, "knockdown": true, "launch": 4.0, "kind": "special"}},
+        {"id": "candle_reveal", "name": "Candle Reveal", "motion": "dp", "buttons": ["lp", "hp"], "prop": "lamp", "startup": 5, "active": 8, "recovery": 26, "invuln": [0, 7], "damage": 95, "knockdown": true, "launch": 5.0, "hitbox": [4, -94, 28, 66]},
+        {"id": "hidden_message", "name": "Hidden Message", "kind": "super", "motion": "qcf2", "buttons": ["lp+hp"], "anim": "cast", "gauge_cost": 100, "startup": 8, "active": 1, "recovery": 36, "invuln": [0, 12],
+         "damage": 280, "hitstun": 30, "knockdown": true, "launch": 6.0, "hitstop": 12,
+         "projectile": {"speed": 3.6, "size": [40, 28], "offset": [30, -44], "color": "#bff0ea", "opacity": 0.55, "shape": "letter", "life": 130}}
+      ]
+    }
+  }
+}

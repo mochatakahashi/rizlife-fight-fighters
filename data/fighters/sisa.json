@@ -1,0 +1,22 @@
+{
+  "id": "sisa", "name": "Sisa", "short_name": "Sisa",
+  "health": 900, "walk_speed": 2.2, "back_speed": 1.9, "jump_velocity": 7.6, "jump_speed_x": 2.6,
+  "look": "sisa", "style_order": ["mother"], "normals": {},
+  "styles": {
+    "mother": {
+      "label": "Searching Mother", "look": "sisa",
+      "blurb": "A mother searching for her sons, Basilio and Crispín. Fast and relentless.",
+      "gauge_name": "Hope", "gauge_color": "#9bb7d4", "damage_mult": 0.95,
+      "specials": [
+        {"id": "mothers_call", "name": "Mother's Call", "motion": "qcf", "buttons": ["lp", "hp"], "startup": 11, "active": 1, "recovery": 22, "damage": 60, "hitstun": 18, "blockstun": 12,
+         "projectile": {"speed": 3.6, "size": [12, 36], "grow": [0.2, 0.1], "offset": [22, -40], "color": "#9bb7d4", "shape": "wave", "life": 70}},
+        {"id": "night_song", "name": "Night Song", "motion": "qcb", "buttons": ["lp", "hp"], "startup": 12, "active": 1, "recovery": 22, "damage": 35, "effect": "slow", "effect_frames": 160,
+         "projectile": {"speed": 2.2, "size": [12, 12], "offset": [22, -58], "color": "#c9d6ea", "shape": "notes", "wobble": 4.0, "life": 170}},
+        {"id": "desperate_search", "name": "Desperate Search", "motion": "ff", "buttons": ["lk", "hk"], "anim": "lunge", "startup": 4, "active": 12, "recovery": 16, "move_x": 7.0, "damage": 70, "hitstun": 18, "cancel": true, "hitbox": [6, -60, 34, 26]},
+        {"id": "basilio_crispin", "name": "Basilio! Crispín!", "kind": "super", "motion": "qcf2", "buttons": ["lp+hp"], "anim": "cast", "gauge_cost": 100, "startup": 8, "active": 1, "recovery": 36, "invuln": [0, 12],
+         "damage": 280, "hitstun": 30, "knockdown": true, "launch": 6.0, "hitstop": 12,
+         "projectile": {"speed": 3.2, "size": [22, 62], "grow": [0.5, 0.25], "offset": [22, -36], "color": "#c9d6ea", "shape": "wave", "life": 80}}
+      ]
+    }
+  }
+}

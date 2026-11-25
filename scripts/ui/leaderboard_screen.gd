@@ -41,7 +41,7 @@ func _ready() -> void:
 	buttons.add_theme_constant_override("separation", 6)
 	var first: Button = null
 	if not Game.last_match.is_empty():
-		first = _add(buttons, "Rematch", Game.goto.bind("fight"))
+		first = _add(buttons, "Rematch", Game.goto.bind("versus"))
 		_add(buttons, "Fighter select", Game.goto.bind("select"))
 	var menu := _add(buttons, "Main menu", Game.goto.bind("main_menu"))
 	box.add_child(buttons)

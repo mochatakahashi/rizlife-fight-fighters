@@ -1,0 +1,22 @@
+{
+  "id": "segunda", "name": "Segunda Katigbak", "short_name": "Segunda",
+  "health": 900, "walk_speed": 2.0, "back_speed": 1.8, "jump_velocity": 7.6, "jump_speed_x": 2.6,
+  "look": "segunda", "style_order": ["first_love"], "normals": {},
+  "styles": {
+    "first_love": {
+      "label": "First Love", "look": "segunda",
+      "blurb": "Rizal's first love, from Lipa. Fights at range with hearts.",
+      "gauge_name": "Heart", "gauge_color": "#f28da0", "damage_mult": 0.95,
+      "specials": [
+        {"id": "heart_projectile", "name": "Heart Projectile", "motion": "qcf", "buttons": ["lp", "hp"], "startup": 12, "active": 1, "recovery": 24, "damage": 60, "hitstun": 18, "blockstun": 12,
+         "projectile": {"speed": 3.2, "size": [14, 12], "offset": [26, -50], "color": "#e63946", "shape": "heart", "life": 160}, "heavy": {"projectile": {"speed": 4.4}}},
+        {"id": "already_engaged", "name": "Already Engaged", "motion": "qcb", "buttons": ["lp", "hp"], "startup": 2, "active": 0, "recovery": 24, "counter_window": [2, 20],
+         "counter_hit": {"name": "Already Engaged", "damage": 110, "knockdown": true, "launch": 4.0, "kind": "special"}},
+        {"id": "trozo_visit", "name": "Trozo Visit", "motion": "ff", "buttons": ["lk", "hk"], "anim": "lunge_kick", "startup": 4, "active": 12, "recovery": 16, "move_x": 6.5, "damage": 70, "hitstun": 18, "cancel": true, "hitbox": [6, -46, 38, 18]},
+        {"id": "first_love", "name": "First Love", "kind": "super", "motion": "qcf2", "buttons": ["lp+hp"], "anim": "cast", "gauge_cost": 100, "startup": 8, "active": 1, "recovery": 36, "invuln": [0, 12],
+         "damage": 280, "hitstun": 30, "knockdown": true, "launch": 6.0, "hitstop": 12,
+         "projectile": {"speed": 3.4, "size": [36, 32], "offset": [30, -46], "color": "#e63946", "shape": "heart", "life": 130}}
+      ]
+    }
+  }
+}

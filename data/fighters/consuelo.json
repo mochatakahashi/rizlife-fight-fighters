@@ -1,0 +1,22 @@
+{
+  "id": "consuelo", "name": "Consuelo Ortiga y Pérez", "short_name": "Consuelo",
+  "health": 950, "walk_speed": 1.9, "back_speed": 1.7, "jump_velocity": 7.4, "jump_speed_x": 2.5,
+  "look": "consuelo", "style_order": ["madrilena"], "normals": {},
+  "styles": {
+    "madrilena": {
+      "label": "Madrileña", "look": "consuelo",
+      "blurb": "Rizal wrote her a poem in Madrid. A strong anti-air and a sharp fan.",
+      "gauge_name": "Verse", "gauge_color": "#b388ff", "damage_mult": 0.95,
+      "specials": [
+        {"id": "fan_flick", "name": "Fan Flick", "motion": "qcf", "buttons": ["lp", "hp"], "prop": "fan", "startup": 10, "active": 1, "recovery": 22, "damage": 55, "hitstun": 16, "blockstun": 12,
+         "projectile": {"speed": 4.0, "size": [10, 28], "offset": [22, -48], "color": "#e63946", "shape": "wave", "life": 60}},
+        {"id": "verse_strike", "name": "Verse Strike", "motion": "dp", "buttons": ["lp", "hp"], "startup": 4, "active": 10, "recovery": 28, "invuln": [0, 8], "move_x": 1.2, "damage": 100, "knockdown": true, "launch": 5.5, "hitbox": [2, -96, 30, 70]},
+        {"id": "soiree", "name": "Soirée", "motion": "qcb", "buttons": ["lp", "hp"], "prop": "fan", "startup": 2, "active": 0, "recovery": 24, "counter_window": [2, 20],
+         "counter_hit": {"name": "Soirée", "damage": 110, "knockdown": true, "launch": 4.0, "kind": "special"}},
+        {"id": "a_la_senorita", "name": "A la Señorita C. O. y R.", "kind": "super", "motion": "qcf2", "buttons": ["lp+hp"], "anim": "cast", "gauge_cost": 100, "startup": 8, "active": 1, "recovery": 36, "invuln": [0, 12],
+         "damage": 280, "hitstun": 30, "knockdown": true, "launch": 6.0, "hitstop": 12,
+         "projectile": {"speed": 4.4, "size": [30, 40], "offset": [30, -42], "color": "#fff4d6", "shape": "page", "life": 130}}
+      ]
+    }
+  }
+}

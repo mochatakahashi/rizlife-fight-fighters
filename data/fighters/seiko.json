@@ -1,0 +1,21 @@
+{
+  "id": "seiko", "name": "O-Sei-San", "short_name": "O-Sei-San",
+  "health": 950, "walk_speed": 2.1, "back_speed": 1.8, "jump_velocity": 7.6, "jump_speed_x": 2.6,
+  "look": "seiko", "style_order": ["tokyo"], "normals": {},
+  "styles": {
+    "tokyo": {
+      "label": "Tokyo Guide", "look": "seiko",
+      "blurb": "Usui Seiko, a former samurai's daughter. Cherry blossoms and a quick blade.",
+      "gauge_name": "Sakura", "gauge_color": "#f4a6c0",
+      "specials": [
+        {"id": "sakura", "name": "Sakura", "motion": "qcf", "buttons": ["lp", "hp"], "startup": 11, "active": 1, "recovery": 22, "damage": 60, "hitstun": 18, "blockstun": 12,
+         "projectile": {"speed": 3.4, "size": [14, 14], "offset": [24, -50], "color": "#f4c2d0", "shape": "petals", "wobble": 3.0, "life": 160}},
+        {"id": "katana_draw", "name": "Katana Draw", "motion": "qcf", "buttons": ["lk", "hk"], "prop": "katana", "anim": "lunge", "startup": 9, "active": 4, "recovery": 20, "move_x": 3.2, "damage": 85, "hitstun": 22, "blockstun": 14, "cancel": true, "hitbox": [10, -52, 44, 12]},
+        {"id": "iai_stance", "name": "Iai Stance", "motion": "qcb", "buttons": ["lp", "hp"], "prop": "katana", "startup": 2, "active": 0, "recovery": 24, "counter_window": [2, 20],
+         "counter_hit": {"name": "Iai Stance", "damage": 120, "knockdown": true, "launch": 4.0, "kind": "special"}},
+        {"id": "sayonara", "name": "Sayonara", "kind": "super", "motion": "qcf2", "buttons": ["lp+hp"], "prop": "katana", "anim": "lunge", "gauge_cost": 100, "startup": 5, "active": 14, "recovery": 30, "invuln": [0, 16], "move_x": 6.0,
+         "damage": 300, "knockdown": true, "launch": 6.5, "hitstop": 14, "hitbox": [6, -66, 48, 60]}
+      ]
+    }
+  }
+}

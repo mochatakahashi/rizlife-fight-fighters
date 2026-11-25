@@ -4,9 +4,20 @@
   {"id": "elias", "look": "elias", "name": "Elias", "role": "The fast boatman, fighting with his oar.", "playable": true},
   {"id": "maria_clara", "look": "maria_clara", "name": "María Clara", "role": "Defensive counter-puncher with a bell shockwave.", "playable": true},
   {"id": "padre_damaso", "look": "padre_damaso", "name": "Padre Dámaso", "role": "Slow, heavy grappler with huge damage.", "playable": true},
+  {"id": "padre_salvi", "look": "padre_salvi", "name": "Padre Salvi", "role": "The scheming curate. Slippery and sly.", "playable": true},
+  {"id": "sisa", "look": "sisa", "name": "Sisa", "role": "A mother searching for her sons. Fast and relentless.", "playable": true},
   {"id": "teodora", "look": "teodora", "name": "Teodora Alonso", "role": "His mother and first teacher. Patient zoner.", "playable": true},
   {"id": "paciano", "look": "paciano", "name": "Paciano Rizal", "role": "His elder brother. A hard-hitting bolo charger.", "playable": true},
   {"id": "blumentritt", "look": "blumentritt", "name": "Ferdinand Blumentritt", "role": "His Austrian best friend. Fights with letters.", "playable": true},
   {"id": "del_pilar", "look": "del_pilar", "name": "Marcelo H. del Pilar", "role": "Plaridel of La Solidaridad. Fast rushdown.", "playable": true},
-  {"id": "juan_luna", "look": "juan_luna", "name": "Juan Luna", "role": "Painter of the Spoliarium, with paint and foil.", "playable": true}
+  {"id": "juan_luna", "look": "juan_luna", "name": "Juan Luna", "role": "Painter of the Spoliarium, with paint and foil.", "playable": true},
+  {"id": "segunda", "look": "segunda", "name": "Segunda Katigbak", "role": "His first love, from Lipa. Hearts from afar.", "playable": true},
+  {"id": "valenzuela", "look": "valenzuela", "name": "Leonor Valenzuela", "role": "\"Orang\". Invisible-ink notes, hard to see.", "playable": true},
+  {"id": "rivera", "look": "rivera", "name": "Leonor Rivera", "role": "\"Taimis\". Letters and piano music.", "playable": true},
+  {"id": "consuelo", "look": "consuelo", "name": "Consuelo Ortiga y Pérez", "role": "His Madrid muse. Fan, verse and a strong anti-air.", "playable": true},
+  {"id": "seiko", "look": "seiko", "name": "O-Sei-San", "role": "His Tokyo guide. Sakura petals and a katana.", "playable": true},
+  {"id": "beckett", "look": "beckett", "name": "Gertrude Beckett", "role": "\"Gettie\" of London. Clay lobs and low sweeps.", "playable": true},
+  {"id": "nelly", "look": "nelly", "name": "Nelly Boustead", "role": "The fencer. Long thrusts and a riposte.", "playable": true},
+  {"id": "suzanne", "look": "suzanne", "name": "Suzanne Jacoby", "role": "\"Petite Suzanne\" of Brussels. Slowing tears.", "playable": true},
+  {"id": "josephine", "look": "josephine", "name": "Josephine Bracken", "role": "His companion in Dapitan. Seashells and guard.", "playable": true}
 ]

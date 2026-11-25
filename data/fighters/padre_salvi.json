@@ -1,0 +1,22 @@
+{
+  "id": "padre_salvi", "name": "Padre Salvi", "short_name": "Salvi",
+  "health": 900, "walk_speed": 2.1, "back_speed": 1.9, "jump_velocity": 7.6, "jump_speed_x": 2.6,
+  "look": "padre_salvi", "style_order": ["curate"], "normals": {},
+  "styles": {
+    "curate": {
+      "label": "Curate", "look": "padre_salvi",
+      "blurb": "The thin, scheming curate who framed Ibarra. Slippery and sly.",
+      "gauge_name": "Scheme", "gauge_color": "#8e6cc7", "damage_mult": 0.95,
+      "specials": [
+        {"id": "whispered_plot", "name": "Whispered Plot", "motion": "qcf", "buttons": ["lp", "hp"], "startup": 12, "active": 1, "recovery": 22, "damage": 60, "hitstun": 18, "blockstun": 12,
+         "projectile": {"speed": 3.4, "size": [14, 10], "offset": [24, -52], "color": "#b9a7d6", "shape": "letter", "life": 150}, "heavy": {"projectile": {"speed": 4.8}}},
+        {"id": "confession", "name": "Confession", "motion": "qcb", "buttons": ["lp", "hp"], "prop": "book", "startup": 2, "active": 0, "recovery": 24, "counter_window": [2, 20],
+         "counter_hit": {"name": "Confession", "damage": 115, "knockdown": true, "launch": 4.0, "kind": "special"}},
+        {"id": "shadow_step", "name": "Shadow Step", "motion": "ff", "buttons": ["lk", "hk"], "anim": "lunge_kick", "startup": 3, "active": 12, "recovery": 16, "move_x": 7.0, "damage": 65, "hitstun": 18, "cancel": true, "hitbox": [6, -46, 38, 18]},
+        {"id": "false_uprising", "name": "False Uprising", "kind": "super", "motion": "qcf2", "buttons": ["lp+hp"], "anim": "cast", "gauge_cost": 100, "startup": 8, "active": 1, "recovery": 36, "invuln": [0, 12],
+         "damage": 280, "hitstun": 30, "knockdown": true, "launch": 6.0, "hitstop": 12,
+         "projectile": {"speed": 3.0, "size": [22, 60], "grow": [0.5, 0.25], "offset": [22, -36], "color": "#8e6cc7", "shape": "wave", "life": 80}}
+      ]
+    }
+  }
+}

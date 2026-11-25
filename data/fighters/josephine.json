@@ -1,0 +1,21 @@
+{
+  "id": "josephine", "name": "Josephine Bracken", "short_name": "Josephine",
+  "health": 1000, "walk_speed": 2.0, "back_speed": 1.8, "jump_velocity": 7.6, "jump_speed_x": 2.6,
+  "look": "josephine", "style_order": ["dapitan"], "normals": {},
+  "styles": {
+    "dapitan": {
+      "label": "Dapitan", "look": "josephine",
+      "blurb": "She came to Dapitan with her blind father and stayed. Seashells and a steady guard.",
+      "gauge_name": "Vow", "gauge_color": "#ff9e6e",
+      "specials": [
+        {"id": "seashell_toss", "name": "Seashell Toss", "motion": "qcf", "buttons": ["lp", "hp"], "startup": 11, "active": 1, "recovery": 22, "damage": 60, "hitstun": 18, "blockstun": 12,
+         "projectile": {"speed": 3.8, "size": [12, 12], "offset": [24, -50], "color": "#f2d6c0", "shape": "shell", "life": 150}},
+        {"id": "sea_breeze", "name": "Sea Breeze", "motion": "dp", "buttons": ["lp", "hp"], "startup": 5, "active": 8, "recovery": 26, "invuln": [0, 7], "damage": 95, "knockdown": true, "launch": 5.0, "hitbox": [4, -94, 28, 66]},
+        {"id": "steadfast", "name": "Steadfast", "motion": "qcb", "buttons": ["lp", "hp"], "startup": 2, "active": 0, "recovery": 24, "counter_window": [2, 20],
+         "counter_hit": {"name": "Steadfast", "damage": 115, "knockdown": true, "launch": 4.0, "kind": "special"}},
+        {"id": "last_vow", "name": "Last Vow", "kind": "super", "motion": "qcf2", "buttons": ["lp+hp"], "gauge_cost": 100, "startup": 5, "active": 12, "recovery": 36, "invuln": [0, 16], "move_x": 4.5,
+         "damage": 290, "knockdown": true, "launch": 6.5, "hitstop": 12, "hitbox": [6, -70, 40, 64]}
+      ]
+    }
+  }
+}

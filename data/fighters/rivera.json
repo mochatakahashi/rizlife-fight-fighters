@@ -1,0 +1,23 @@
+{
+  "id": "rivera", "name": "Leonor Rivera", "short_name": "Rivera",
+  "health": 950, "walk_speed": 1.9, "back_speed": 1.7, "jump_velocity": 7.4, "jump_speed_x": 2.5,
+  "look": "rivera", "style_order": ["taimis"], "normals": {},
+  "styles": {
+    "taimis": {
+      "label": "Taimis", "look": "rivera",
+      "blurb": "She signed her letters \"Taimis\" and played the piano. Letters and music from afar.",
+      "gauge_name": "Letters", "gauge_color": "#6f8fd0", "damage_mult": 0.95,
+      "specials": [
+        {"id": "piano_keys", "name": "Piano Keys", "motion": "qcf", "buttons": ["lp", "hp"], "startup": 11, "active": 1, "recovery": 22, "damage": 60, "hitstun": 18, "blockstun": 12,
+         "projectile": {"speed": 3.6, "size": [12, 12], "offset": [24, -54], "color": "#f5f5f7", "shape": "notes", "life": 150}},
+        {"id": "letters_from_taal", "name": "Letters from Taal", "motion": "qcb", "buttons": ["lp", "hp"], "height": "overhead", "startup": 12, "active": 1, "recovery": 24, "damage": 60, "hitstun": 18,
+         "projectile": {"speed": 2.6, "vy": -4.2, "gravity": 0.16, "size": [12, 9], "offset": [20, -60], "color": "#f5f5f7", "shape": "letter", "life": 200}},
+        {"id": "faithful_wait", "name": "Faithful Wait", "motion": "qcb", "buttons": ["lk", "hk"], "startup": 2, "active": 0, "recovery": 24, "counter_window": [2, 20],
+         "counter_hit": {"name": "Faithful Wait", "damage": 110, "knockdown": true, "launch": 4.0, "kind": "special"}},
+        {"id": "taimis", "name": "Taimis", "kind": "super", "motion": "qcf2", "buttons": ["lp+hp"], "anim": "cast", "gauge_cost": 100, "startup": 8, "active": 1, "recovery": 36, "invuln": [0, 12],
+         "damage": 280, "hitstun": 30, "knockdown": true, "launch": 6.0, "hitstop": 12,
+         "projectile": {"speed": 3.6, "size": [40, 28], "offset": [30, -44], "color": "#f5f0e1", "shape": "letter", "life": 130}}
+      ]
+    }
+  }
+}

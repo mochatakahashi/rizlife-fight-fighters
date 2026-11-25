@@ -46,10 +46,13 @@ Supers are `QCF x2 + X+Y` and need a full gauge.
 |---|---|
 | 1. Prototype: Rizal, one stage | Done, with all 6 stages drawn |
 | 2. Core: Lovers and Writer styles, quiz | Done: both styles, LB switching, the quiz after every match |
-| 3. Content: four more fighters, stages | Done, and more: ten fighters from Rizal's novels and his real life, on six stages |
+| 3. Content: four more fighters, stages | Done, and more: 21 fighters from Rizal's novels and his real life, on six stages |
 | 4. Polish: art, sound, playtest | Art: dressed, animated characters, lit stages, hit effects, a modern HUD and screen fades. Sound and playtesting are not started. |
 
-**Screens:** title → player names → fighter/style select → stage select → fight → Rizal question → leaderboard (rematch, select, or menu).
+**Screens:** title → player names → fighter/style select → stage select → **versus screen** → fight → Rizal question → leaderboard (rematch, select, or menu).
+
+- **Fighter select:** large cards in a scrolling grid. Use the mouse wheel or the scrollbar, or move with the arrow keys and it scrolls to follow you. Click a card to pick it (P1 first, then P2). With keys or a pad, the arrows move, **LB** (H / Num 6) changes style, and X locks in.
+- **Versus screen:** big close-ups of both fighters on their player's colour, with their names, styles, a fact about each, and the stage. "VS" slams in, then the fight starts after about 4 seconds, or sooner if you press any button or click. Rematch goes through it too.
 
 **Fighting engine:**
 - Fixed 60 fps logic.
@@ -83,7 +86,19 @@ Every character is drawn by `scripts/art/character_art.gd` in a costume from `da
 | Marcelo H. del Pilar | "Plaridel": dark suit, bow tie, moustache | Copies of *La Solidaridad* | `QCF + X/Y` Press Run, `F, F + A/B` Plaridel (dash), `DP + X/Y` Headline, `QCF x2 + X+Y` La Solidaridad |
 | Juan Luna | Painter: frock coat, red cravat, moustache, brush in hand | Paint, his brush, the foil he fenced Rizal with on Sundays, and the *Spoliarium* | `QCF + X/Y` Paint Splash, `QCB + A/B` Brush Stroke (low), `[B] F + X/Y` Sunday Duel, `QCF x2 + X+Y` Spoliarium |
 
-Padre Salvi ("thin, wasted, and pale") and Sisa are drawn too, ready for PvE.
+| Padre Salvi | "Thin, wasted, and pale" Franciscan | His schemes (he framed Ibarra) | `QCF + X/Y` Whispered Plot, `QCB + X/Y` Confession (counter), `F, F + A/B` Shadow Step, `QCF x2 + X+Y` False Uprising |
+| Sisa | A mother searching for her sons, Basilio and Crispín | Her calls and her song | `QCF + X/Y` Mother's Call, `QCB + X/Y` Night Song (slows), `F, F + A/B` Desperate Search, `QCF x2 + X+Y` Basilio! Crispín! |
+| Segunda Katigbak | Baro't saya, from Lipa | Hearts | `QCF + X/Y` Heart Projectile, `QCB + X/Y` Already Engaged (counter), `F, F + A/B` Trozo Visit, `QCF x2 + X+Y` First Love |
+| Leonor Valenzuela | Baro't saya | Invisible ink, and the candle that reveals it | `QCF + X/Y` Invisible Ink, `QCB + X/Y` Secret Note (counter), `DP + X/Y` Candle Reveal, `QCF x2 + X+Y` Hidden Message |
+| Leonor Rivera | Baro't saya | Her "Taimis" letters and the piano | `QCF + X/Y` Piano Keys, `QCB + X/Y` Letters from Taal (overhead), `QCB + A/B` Faithful Wait (counter), `QCF x2 + X+Y` Taimis |
+| Consuelo Ortiga y Pérez | Bustle dress, mantilla | Her fan and Rizal's poem to her | `QCF + X/Y` Fan Flick, `DP + X/Y` Verse Strike, `QCB + X/Y` Soirée (counter), `QCF x2 + X+Y` A la Señorita C. O. y R. |
+| O-Sei-San | Kimono | Cherry blossoms and a katana | `QCF + X/Y` Sakura, `QCF + A/B` Katana Draw, `QCB + X/Y` Iai Stance (counter), `QCF x2 + X+Y` Sayonara |
+| Gertrude Beckett | Bustle dress | Sculptor's clay | `QCF + X/Y` Clay Toss, `QCB + A/B` Ink and Clay (low), `DP + X/Y` Primrose Hill, `QCF x2 + X+Y` Three Sisters |
+| Nelly Boustead | Dress, fencing foil | Fencing | `QCF + X/Y` Lunge, `F, F + A/B` Flèche, `QCB + X/Y` Riposte (counter), `QCF x2 + X+Y` Grand Salute |
+| Suzanne Jacoby | 1890 dress | Longing letters and tears | `QCF + X/Y` Longing Letter, `[D] U + A/B` Farewell Tears (slows), `QCB + X/Y` Waiting at the Window (counter), `QCF x2 + X+Y` Petite Suzanne |
+| Josephine Bracken | 1890s blouse | Dapitan seashells | `QCF + X/Y` Seashell Toss, `DP + X/Y` Sea Breeze, `QCB + X/Y` Steadfast (counter), `QCF x2 + X+Y` Last Vow |
+
+All 21 fighters are playable. The nine loves also still fight beside Rizal in his Lovers style.
 
 ### Rizal's nine loves
 
@@ -124,7 +139,7 @@ Run `godot --path . res://tools/screenshots.tscn` to get `00_costumes.png`, ever
 ```
 data/                  Everything you'll tune or write, in JSON
   rules.json           term name, rounds, timers, points
-  roster.json          the 10 fighters on the select screen
+  roster.json          the 21 fighters on the select screen
   stages.json          the 6 stages, their question topics and colours
   looks.json           every character's costume, including Rizal's nine loves
   questions.json       the Rizal question bank
@@ -160,7 +175,7 @@ Frame counts are at 60 per second.
 | `knockdown`, `launch` | Knocks down, and how high they fly |
 | `move_x` | Forward speed while the move is coming out (lunges) |
 | `invuln` | `[from, to]` frames where the move can't be hit (anti-airs, supers) |
-| `projectile` | `speed`, `vy`, `gravity`, `size`, `offset`, `delay`, `life`, `color`, `shape` (`rect`/`orb`/`heart`/`quill`/`letter`/`ink`/`tear`/`lamp`/`pillar`), `opacity` |
+| `projectile` | `speed`, `vy`, `gravity`, `size`, `offset`, `delay`, `life`, `color`, `shape` (`rect`, `orb`, `heart`, `quill`, `letter`, `ink`, `tear`, `lamp`, `pillar`, `page`, `locket`, `wave`, `moth`, `coin`, `newspaper`, `paint`, `canvas`, `petals`, `clay`, `shell`, `notes`), `grow`, `wobble`, `opacity` |
 | `counter_window`, `counter_hit` | Counter stance: frames it catches attacks, and the hit it answers with |
 | `type: "throw"` | Can't be blocked; grabs grounded opponents |
 | `cancel` | This move can be cancelled into a special when it connects |

@@ -126,7 +126,7 @@ func _test_motions() -> void:
 
 func _test_data() -> void:
 	print("Data files")
-	check(Game.roster.size() == 10, "roster lists the 10 fighters")
+	check(Game.roster.size() == 21, "roster lists all 21 fighters")
 	check(Game.stages.size() == 6, "6 stages")
 	var stage_ids: Array = Game.stages.map(func(s): return str(s["id"]))
 	for id in _fighter_ids():
@@ -288,8 +288,8 @@ func _test_new_fighters() -> void:
 ## Teodora, Paciano, Blumentritt, del Pilar and Luna: each one's QCF special comes out, and
 ## a short CPU-vs-CPU bout with each stays sane.
 func _test_life_fighters() -> void:
-	print("People from Rizal's life")
-	for id in ["teodora", "paciano", "blumentritt", "del_pilar", "juan_luna"]:
+	print("Everyone else in Rizal's life")
+	for id in _fighter_ids().filter(func(x): return x not in ["rizal", "ibarra", "elias", "maria_clara", "padre_damaso"]):
 		var d := Game.fighter_data(id)
 		var style_id := str((d.get("style_order", []) as Array)[0])
 		var special: Dictionary = {}
